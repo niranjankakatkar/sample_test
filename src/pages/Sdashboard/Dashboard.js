@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../Navbar'
 
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Slide, toast } from 'react-toastify';
+
 import axios from 'axios';
 
 export default function Dashboard() {

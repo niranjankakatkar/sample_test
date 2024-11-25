@@ -2,7 +2,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Slide, toast } from "react-toastify";
 import Navbar from "../Navbar";
 
 export default function AddAdvertisement() {
@@ -95,21 +94,21 @@ export default function AddAdvertisement() {
         formData
       )
       .then(() => {
-        toast.success("Record Added Successfully", {
+       /* toast.success("Record Added Successfully", {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
           transition: Slide,
-        });
+        });*/
         navigate("/advertisement");
       })
       .catch(() => {
-        toast.error("Something went wrong", {
+      /*  toast.error("Something went wrong", {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
           transition: Slide,
-        });
+        });*/
       });
   };
 

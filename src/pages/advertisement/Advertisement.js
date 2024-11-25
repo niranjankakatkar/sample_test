@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Slide, toast } from "react-toastify";
 import Navbar from "../Navbar";
 
 export default function Advertisement() {
@@ -96,20 +95,20 @@ export default function Advertisement() {
       )
       .then((res) => {
         //console.log(res);
-        toast.success("Record Added Successfully", {
+        /*toast.success("Record Added Successfully", {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
           transition: Slide,
-        });
+        });*/
       })
       .catch((err) => {
-        toast.error("Somthing is wrong", {
+       /* toast.error("Somthing is wrong", {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
           transition: Slide,
-        });
+        });*/
         //console.log(err);
       });
     navigate("/advertisement");
