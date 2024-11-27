@@ -84,7 +84,7 @@ export default function User() {
     e.preventDefault();
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("moduleId", module._id);
+    formData.append("moduleId", module);
     formData.append("category", category);
     formData.append("activeFlag", activeFlag);
 
@@ -93,6 +93,7 @@ export default function User() {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
+        window.location.reload();
         toast.success("Record Added Successfully", {
           position: "top-right",
           autoClose: 3000,
@@ -346,21 +347,19 @@ export default function User() {
                             {data.map((user, index) => {
                               return (
                                 <tr key={index}>
-                                  <td>1</td>
+                                  <td>{index + 1}</td>
                                   <td>
-                                    <h2 className="table-avatar">
-                                      <a
-                                        href="profile.html"
-                                        className="company-avatar avatar-md me-2 companies company-icon"
-                                      >
-                                        <img
-                                          className="avatar-img rounded-circle company"
-                                          src="assets/img/companies/company-01.svg"
-                                          alt="Company Image"
-                                        />
-                                      </a>
-                                      <a href="#">{user.module}</a>
-                                    </h2>
+                                   {
+                                     /* axios
+                                      .get("http://43.205.22.150:5000/module/getAllModule")
+                                      .then((res) => setModules(res.data))
+                                      .catch((err) => console.error(err))
+
+                                   
+                                   user.moduleId*/
+                                   
+                                   }
+                                    
                                   </td>
                                   <td>{user.category}</td>
                                   {/* <td>
@@ -541,15 +540,11 @@ export default function User() {
                     </div>
                     <div className="col-md-6">
                       <div className="input-block mb-3">
-                        <label>Plan Type</label>
-                        <select className="form-control"
-                         options={modules}
-                         getOptionLabel={(option) => option.module || ""}
-                         value={module}
-                         onChange={(event, newValue) => setModule(newValue)}
-                         
-                        >
-                         
+                        <label>Module </label>
+                        <select className="form-control" onChange={(e) => setModule(e.target.value)} >
+                         {
+                          modules.map(opt=><option value={opt._id} >{opt.module}</option>)
+                         }
                          
                         </select>
 
@@ -557,7 +552,10 @@ export default function User() {
                     </div>
                     <div className="col-md-6">
                       <div className="input-block mb-3">
-
+                        <label className="form-label">Category </label>
+                        <input type="text" className="form-control" placeholder="Enter User Name" name="name" value={category} onChange={(e) => setCategory(e.target.value)} />
+                                         
+                         
                       </div>
                     </div>
 
