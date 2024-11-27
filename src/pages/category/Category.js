@@ -354,9 +354,7 @@ export default function User() {
                                       .get("http://43.205.22.150:5000/module/getAllModule")
                                       .then((res) => setModules(res.data))
                                       .catch((err) => console.error(err))
-
-                                   
-                                   user.moduleId*/
+                                      user.moduleId*/
                                    
                                    }
                                     
