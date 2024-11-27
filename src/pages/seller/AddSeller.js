@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { toast, Slide } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+
 import Navbar from "../Navbar";
 
 export default function AddSeller() {
@@ -11,7 +13,7 @@ export default function AddSeller() {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [tax, setTax] = useState("");
-  
+
   const [zone, setZone] = useState("");
   const [lat, setLat] = useState("");
   const [long, setLong] = useState("");
@@ -20,9 +22,30 @@ export default function AddSeller() {
   const [mobileno, setMobileno] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [time, setTime] = useState({ hour: "", minute: "", period: "AM" });
   const [activeFlag, setActiveFlag] = useState(true);
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+
+  const handleTimeChange = (event) => {
+    const { name, value } = event.target;
+  
+    // Update the `time` object in the state
+    setTime((prevTime) => ({
+      ...prevTime,
+      [name]: value,
+    }));
+  };
+
+
+  // Function to format time
+const formatTime = (time) => {
+  const { hour, minute, period } = time;
+  if (hour && minute && period) {
+    return `${hour}:${minute < 10 ? `0${minute}` : minute} ${period}`;
+  }
+  return null; // Return null if any part of the time is missing
+};
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -39,11 +62,26 @@ export default function AddSeller() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  
+    // Format the time before appending it to FormData
+    const formattedTime = formatTime(time);
+  
+    if (!formattedTime) {
+      toast.error("Please select a valid time", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+  
+    // Creating FormData and appending the form fields
     const formData = new FormData();
     formData.append("name", name);
     formData.append("address", address);
     formData.append("tax", tax);
-    formData.append("time","1"); // Send the time in HH:mm format
+    formData.append("time", formattedTime); // Append the formatted time
     formData.append("zone", zone);
     formData.append("lat", lat);
     formData.append("long", long);
@@ -53,7 +91,8 @@ export default function AddSeller() {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("file", file);
-
+  
+    // Send data to the backend via axios
     axios
       .post("http://localhost:5000/seller/createSellerImg", formData)
       .then(() => {
@@ -198,10 +237,73 @@ export default function AddSeller() {
               </div>
 
               {/* Time Picker */}
-              <div className="input-block mb-3">
-                <label className="form-label">Time</label>
-                <br></br>
-                
+              <div className="col-md-6">
+                <div className="input-block mb-3">
+                  <label className="form-label">Time</label>
+                  <br />
+
+                  {/* Hour Selector */}
+                  <select
+                    name="hour"
+                    value={time.hour}
+                    onChange={handleTimeChange}
+                    className="form-control"
+                    style={{ display: "inline-block", width: "30%" }}
+                  >
+                    <option value="">Hour</option>
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
+                      <option key={hour} value={hour}>
+                        {hour < 10 ? `0${hour}` : hour}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Minute Selector */}
+                  <select
+                    name="minute"
+                    value={time.minute}
+                    onChange={handleTimeChange}
+                    className="form-control"
+                    style={{
+                      display: "inline-block",
+                      width: "30%",
+                      marginLeft: "5px",
+                    }}
+                  >
+                    <option value="">Minute</option>
+                    {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
+                      <option key={minute} value={minute}>
+                        {minute < 10 ? `0${minute}` : minute}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* AM/PM Selector */}
+                  <select
+                    name="period"
+                    value={time.period}
+                    onChange={handleTimeChange}
+                    className="form-control"
+                    style={{
+                      display: "inline-block",
+                      width: "30%",
+                      marginLeft: "5px",
+                    }}
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+
+                {/* Display Selected Time */}
+                <div>
+                  <p>
+                    Selected Time:{" "}
+                    {time.hour && time.minute
+                      ? `${time.hour}:${time.minute} ${time.period}`
+                      : "Not Selected"}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -312,9 +414,7 @@ export default function AddSeller() {
 
             {/* Active Flag */}
             <div className="col-md-12">
-              <div className="input-block mb-3">
-                
-              </div>
+              <div className="input-block mb-3"></div>
             </div>
 
             {/* Submit Button */}
@@ -323,7 +423,8 @@ export default function AddSeller() {
               style={{ display: "flex", justifyContent: "center" }}
             >
               <div className="input-block">
-                <button type="submit" variant="contained" color="primary">
+                <button type="submit" variant="contained" color="primary"
+                style={{border: 'none', borderRadius: "5px", padding: '10px 20px', backgroundColor: '#7539ff', color:'white', fontWeight: 'bold'}}>
                   Submit
                 </button>
               </div>

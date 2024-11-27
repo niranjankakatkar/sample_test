@@ -354,7 +354,8 @@ export default function AddCashback() {
               style={{ display: "flex", justifyContent: "center" }}
             >
               <div className="input-block">
-                <button type="submit" variant="contained" color="primary">
+              <button type="submit" variant="contained" color="primary"
+                style={{border: 'none', borderRadius: "5px", padding: '10px 20px', backgroundColor: '#7539ff', color:'white', fontWeight: 'bold'}}>
                   Submit
                 </button>
               </div>

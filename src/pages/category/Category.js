@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Slide, toast } from "react-toastify";
 import Navbar from "../Navbar";
 
+
 export default function User() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -540,12 +541,23 @@ export default function User() {
                     </div>
                     <div className="col-md-6">
                       <div className="input-block mb-3">
-                       
+                        <label>Plan Type</label>
+                        <select className="form-control"
+                         options={modules}
+                         getOptionLabel={(option) => option.module || ""}
+                         value={module}
+                         onChange={(event, newValue) => setModule(newValue)}
+                         
+                        >
+                         
+                         
+                        </select>
+
                       </div>
                     </div>
                     <div className="col-md-6">
                       <div className="input-block mb-3">
-                       
+
                       </div>
                     </div>
 

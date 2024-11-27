@@ -293,10 +293,11 @@ export default function Navbar() {
                 <span>Pramotion Management </span>
               </li>
 
+
               <li className="submenu">
                 <Link to="/banner">
                 <i className="fa-solid fa-tablet-screen-button"></i>
-                <span>Banner</span>
+                <span>Banner</span><span class="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
@@ -317,7 +318,7 @@ export default function Navbar() {
               <li className="submenu">
                 <Link to="/coupon">
                 <i className="fa-solid fa-ticket"></i> 
-                <span>Coupons</span>
+                <span>Coupons</span><span class="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
@@ -338,7 +339,7 @@ export default function Navbar() {
               <li className="submenu">
                 <Link to="/cashback">
                 <i className="fa-solid fa-sack-dollar"></i>
-                 <span>Cashback</span>
+                 <span>Cashback</span><span class="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
@@ -358,7 +359,7 @@ export default function Navbar() {
 
               <li className="submenu">
                 <Link to="/pushnotification">
-                <i className="fa-solid fa-bell"></i><span>Push Notification</span>
+                <i className="fa-solid fa-bell"></i><span>Push Notification</span><span class="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
@@ -379,7 +380,7 @@ export default function Navbar() {
               <li className="submenu">
                 <Link to="/advertisement">
                 <i className="fa-solid fa-video-slash"></i>
-                  <span>Advertisement</span>
+                  <span>Advertisement</span><span class="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>

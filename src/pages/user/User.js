@@ -17,12 +17,15 @@ export default function User() {
     const [activeFlag, setActiveFlag] = useState();
     const [file, setFile] = useState();
 
+
     const [alluser, setAlluser] = useState();
     const [activeUser, setActiveuser] = useState();
     const [inactiveUser, setInactiveuser] = useState();
     const { post_ } = "user";
 
- 
+    let ddid;
+
+    
 
 
     useEffect(() => {
@@ -32,6 +35,7 @@ export default function User() {
                 setData(res.data);
             })
             .catch(err => console.error(err))
+           
     }, [])
 
     useEffect(() => {
@@ -60,6 +64,7 @@ export default function User() {
                 //console.log(res);
 
                 setInactiveuser(res.data.cnt);
+               
             })
             .catch(err => console.error(err))
     }, [])
@@ -67,11 +72,13 @@ export default function User() {
 
 
 
-    const handleDelete = (id) => {
-        axios.delete('http://43.205.22.150:5000/user/deleteSingleUser/' + id)
+    const handleDelete = () => {
+        axios.delete('http://43.205.22.150:5000/user/deleteSingleUser/' + ddid)
             .then(res => {
-                //console.log(res);
-                navigate('/user');
+                console.log(res);
+                window.location.reload();
+
+
             })
             .catch(err => console.error(err))
     }
@@ -87,7 +94,9 @@ export default function User() {
     }
 
 
-
+    const setDeleteID = (d_id) => {
+        ddid = d_id;
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -98,59 +107,59 @@ export default function User() {
         formData.append('password', password);
         formData.append('file', file);
 
-        if(!file){
+        if (!file) {
             axios.post('http://43.205.22.150:5000/user/createUser', formData)
-            .then(res => {
-                const loginID = res.data._id;
-                axios.post('http://43.205.22.150:5000/auth/createAuth', { name, email, password, post_, loginID })
-                //.then(res1=>{ //console.log("---------"+res1);})
-                //.catch .catch(err1=>{ //console.log("-------"+err1);})
+                .then(res => {
+                    const loginID = res.data._id;
+                    axios.post('http://43.205.22.150:5000/auth/createAuth', { name, email, password, post_, loginID })
+                    //.then(res1=>{ //console.log("---------"+res1);})
+                    //.catch .catch(err1=>{ //console.log("-------"+err1);})
 
-                toast.success('Record Added Successfully', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    theme: "colored",
-                    transition: Slide,
-                });
+                    toast.success('Record Added Successfully', {
+                        position: "top-right",
+                        autoClose: 3000,
+                        theme: "colored",
+                        transition: Slide,
+                    });
 
-            })
-            .catch(err => {
-                toast.error('Somthing is wrong', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    theme: "colored",
-                    transition: Slide,
-                });
-                //console.log(err)
-            })
-        }else{
+                })
+                .catch(err => {
+                    toast.error('Somthing is wrong', {
+                        position: "top-right",
+                        autoClose: 3000,
+                        theme: "colored",
+                        transition: Slide,
+                    });
+                    //console.log(err)
+                })
+        } else {
             axios.post('http://43.205.22.150:5000/user/createUserImg', formData)
-            .then(res => {
-                const loginID = res.data._id;
-                axios.post('http://43.205.22.150:5000/auth/createAuth', { name, email, password, post_, loginID })
-                //.then(res1=>{ //console.log("---------"+res1);})
-                //.catch .catch(err1=>{ //console.log("-------"+err1);})
+                .then(res => {
+                    const loginID = res.data._id;
+                    axios.post('http://43.205.22.150:5000/auth/createAuth', { name, email, password, post_, loginID })
+                    //.then(res1=>{ //console.log("---------"+res1);})
+                    //.catch .catch(err1=>{ //console.log("-------"+err1);})
 
-                toast.success('Record Added Successfully', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    theme: "colored",
-                    transition: Slide,
-                });
+                    toast.success('Record Added Successfully', {
+                        position: "top-right",
+                        autoClose: 3000,
+                        theme: "colored",
+                        transition: Slide,
+                    });
 
-            })
-            .catch(err => {
-                toast.error('Somthing is wrong', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    theme: "colored",
-                    transition: Slide,
-                });
-                //console.log(err)
-            })
+                })
+                .catch(err => {
+                    toast.error('Somthing is wrong', {
+                        position: "top-right",
+                        autoClose: 3000,
+                        theme: "colored",
+                        transition: Slide,
+                    });
+                    //console.log(err)
+                })
         }
-       
-           
+
+
 
 
         /*  axios.post('http://43.205.22.150:5000/user/uploadimg',formData)
@@ -193,7 +202,9 @@ export default function User() {
                 activeFlag:""
             })
         }*/
+           
         navigate("/user");
+        window.location.reload();
     }
 
     const planOptions = [
@@ -444,7 +455,7 @@ export default function User() {
                                     <div className="card-body">
                                         <div className="table-responsive">
                                             <div className="companies-table"
-                                            style={{height:"100vh"}}> 
+                                                style={{ height: "100vh" }}>
                                                 <table className="table table-center table-hover datatable" >
                                                     <thead className="thead-light">
                                                         <tr>
@@ -463,8 +474,8 @@ export default function User() {
 
                                                             data.map((user, index) => {
 
-                                                               return <tr key={index}>
-                                                                   <td>{index + 1}</td>
+                                                                return <tr key={index}>
+                                                                    <td>{index + 1}</td>
                                                                     <td>
                                                                         <h2 className="table-avatar">
                                                                             <a href="profile.html"
@@ -484,9 +495,9 @@ export default function User() {
                                                                         className="badge bg-success-light d-inline-flex align-items-center"><i
                                                                             className="fe fe-check me-1"></i>Active</span></td>
                                                                     <td className="d-flex align-items-center">
-                                                                        
+
                                                                         <div className="dropdown dropdown-action">
-                                                                            <Link  className=" btn-action-icon "
+                                                                            <Link className=" btn-action-icon "
                                                                                 data-bs-toggle="dropdown" aria-expanded="false"><i
                                                                                     className="fas fa-ellipsis-v"></i></Link>
                                                                             <div className="dropdown-menu dropdown-menu-end">
@@ -500,13 +511,13 @@ export default function User() {
                                                                                     </li>
                                                                                     <li>
                                                                                         <Link className="dropdown-item"
-                                                                                             to={`/edituser/${user._id}`}><i
+                                                                                            to={`/edituser/${user._id}`}><i
                                                                                                 className="fe fe-edit me-2"></i>Edit</Link>
                                                                                     </li>
                                                                                     <li className="delete-alt">
                                                                                         <div>
                                                                                             <a className="dropdown-item"
-                                                                                                onClick={() => handleDelete(user._id)}
+                                                                                                onClick={() => setDeleteID(user._id)}
                                                                                                 data-bs-toggle="modal"
                                                                                                 data-bs-target="#delete_modal"><i
                                                                                                     className="fe fe-trash-2 me-2"></i>Delete</a>
@@ -525,7 +536,7 @@ export default function User() {
                                                                 </tr>
                                                             })
                                                         }
-                                                        
+
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -550,7 +561,7 @@ export default function User() {
                                 </div>
                                 <div className="modal-btn delete-action">
                                     <div className="modal-footer justify-content-center p-0">
-                                        <button type="submit" data-bs-dismiss="modal"
+                                        <button type="button" onClick={() => handleDelete()} data-bs-dismiss="modal"
                                             className="btn btn-primary paid-continue-btn me-2">Yes, Delete</button>
                                         <button type="button" data-bs-dismiss="modal" className="btn btn-back cancel-btn">No,
                                             Cancel</button>
@@ -580,7 +591,7 @@ export default function User() {
                                                 <h5 className="form-title">User Profile</h5>
                                                 <div className="profile-picture">
                                                     <div className="upload-profile">
-                                                        <div className="profile-img  avatar-xl" style={{marginRight:"10px"}}>
+                                                        <div className="profile-img  avatar-xl" style={{ marginRight: "10px" }}>
                                                             <img id="company-img" className="img-fluid avatar-xl me-0"
                                                                 src="assets/img/companies/company-add-img.svg"
                                                                 alt="profile-img" />
@@ -594,7 +605,7 @@ export default function User() {
                                                         <label className="btn btn-upload">
                                                             Upload <input type="file" accept="image/png,image/jpg,image/jpeg" onChange={(e) => setFile(e.target.files[0])} />
                                                         </label>
-                                                        
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -649,13 +660,25 @@ export default function User() {
                                         <div className="col-md-6">
                                             <div className="input-block mb-3">
                                                 <label>Plan Name</label>
-                                                
+                                                <select className="form-control">
+                                                    <option value="someOption">Select Plans</option>
+                                                    <option value="Advanced">Advanced</option> 
+                                                    <option value="Basic">Basic</option> 
+                                                    <option value="Enterprise">Enterprise</option>
+                                                    <option value="Premium">Premium</option>  
+                                                    <option value="Free">Free</option>   
+                                                </select>
+
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="input-block mb-3">
                                                 <label>Plan Type</label>
-                                               
+                                                <select className="form-control">
+                                                    <option value="someOption">Select Type</option>
+                                                    <option value="Monthly">Monthly</option> 
+                                                    <option value="Yearly">Yearly</option> 
+                                                </select>
                                             </div>
                                         </div>
 
@@ -768,13 +791,13 @@ export default function User() {
                                         <div className="col-md-6">
                                             <div className="input-block mb-3">
                                                 <label>Plan Name</label>
-                                                
+
                                             </div>
                                         </div>
                                         <div className="col-md-6">
                                             <div className="input-block mb-3">
                                                 <label>Plan Type</label>
-                                               
+
                                             </div>
                                         </div>
                                         <div className="col-md-12">
