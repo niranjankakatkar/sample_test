@@ -420,8 +420,7 @@ export default function User() {
                                         <a
                                           className="dropdown-item"
                                           href="javascript:void(0);"
-                                          data-bs-toggle="modal"
-                                          data-bs-target="#edit_companies"
+                                          
                                         >
                                           <i className="fe fe-edit me-2"></i>
                                           Edit
