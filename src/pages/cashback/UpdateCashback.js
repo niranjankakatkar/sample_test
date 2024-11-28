@@ -7,8 +7,9 @@ import { useParams } from "react-router-dom";
 
 import NavBar_Inner from "../NavBar_Inner";
 
-export default function UpdateUser() {
+export default function UpdateCashback() {
   const navigate = useNavigate();
+  const [data, setData] = useState([]);
 
   const { id } = useParams();
 
@@ -16,40 +17,22 @@ export default function UpdateUser() {
   const [moduleId, setModuleId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [subcategoryId, setSubcategoryId] = useState("");
-  const [title, setTitle] = useState("");
-  const [zone, setZone] = useState("");
-  const [type, setType] = useState("");
-  const [seller, setSeller] = useState("");
-  //  const [file, setFile] = useState(null);
-
-  const [modules, setModules] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubCategories] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/subcategory/getAllSubcategory")
-      .then((res) => setSubCategories(res.data))
-      .catch((err) => console.error(err));
-
-    axios
-      .get("http://localhost:5000/module/getAllModule")
-      .then((res) => setModules(res.data))
-      .catch((err) => console.error(err));
-
-    axios
-      .get("http://localhost:5000/category/getAllCategory")
-      .then((res) => {
-        setCategories(res.data);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+  const [title, setTitle] = useState();
+  const [customer, setCustomer] = useState();
+  const [cashback, setCashback] = useState();
+  const [minpurchase, setMinpurchase] = useState();
+  const [maxdiscount, setMaxdiscount] = useState();
+  const [startdate, setStartdate] = useState(null);
+  const [enddate, setEnddate] = useState(null);
+  const [limit, setLimit] = useState();
+  const [activeFlag, setActiveFlag] = useState();
+  const [file, setFile] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/banner/editBanner/" + id
+          "http://localhost:5000/cashback/editcashback/" + id
         );
         console.log(response);
         setID(response.data._id);
@@ -57,12 +40,18 @@ export default function UpdateUser() {
         setCategoryId(response.data.categoryId);
         setSubcategoryId(response.data.subcategoryId);
         setTitle(response.data.title);
-        setZone(response.data.zone);
-        setType(response.data.type);
-        setSeller(response.data.seller);
-        // setFile(response.data.file);
+        setCustomer(response.data.customer)
+        setCashback(response.data.cashback);
+        setMinpurchase(response.data.minpurchase);
+        setMaxdiscount(response.data.maxdiscount);
+        setLimit(response.data.limit);
+        setStartdate(response.data.startdate);
+        setEnddate(response.data.enddate);
+        setFile(response.data.file);
+
+        //setFileName(response.data.filename);
       } catch (error) {
-        console.log(error);
+        //console.log(error)
       }
     };
     fetchData();
@@ -76,16 +65,21 @@ export default function UpdateUser() {
     formData.append("categoryId", categoryId);
     formData.append("subcategoryId", subcategoryId);
     formData.append("title", title);
-    formData.append("zone", zone);
-    formData.append("type", type);
-    formData.append("seller", seller);
+    formData.append("cashback", cashback);
+    formData.append("customer", customer);
+    formData.append("minpurchase", minpurchase);
+    formData.append("maxdiscount", maxdiscount);
+    formData.append("startdate", startdate);
+    formData.append("enddate", enddate);
+    formData.append("limit", limit);
+    formData.append("file", file);
 
     axios
-      .post("http://localhost:5000/banner/editBanner/" + id, formData)
+      .post("http://localhost:5000/cashback/editCashback/" + id, formData)
       .then((res) => {
-        //    const loginID = res.data._id;
+        //  const loginID = res.data._id;
         console.log(res);
-
+        
         toast.success("Record Added Successfully", {
           position: "top-right",
           autoClose: 3000,
@@ -100,11 +94,13 @@ export default function UpdateUser() {
           theme: "colored",
           transition: Slide,
         });
-        console.log(err);
+        //console.log(err)
       });
 
-    navigate("/banner");
+   
+    navigate("/cashback");
   };
+
 
   return (
     <>
@@ -115,7 +111,7 @@ export default function UpdateUser() {
             <div className="card-body">
               <div className="page-header">
                 <div className="content-page-header">
-                  <h5>Edit Customer</h5>
+                  <h5>Edit Cashback</h5>
                 </div>
               </div>
 
@@ -150,124 +146,110 @@ export default function UpdateUser() {
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
-                              Module <span className="text-danger">*</span>
-                            </label>
-                            <select
-                              className="form-control"
-                              onChange={(e) => setModuleId(e.target.value)}
-                            >
-                              {modules.map((opt) => (
-                                <option value={opt._id}>{opt.module}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
-                              Category <span className="text-danger">*</span>
-                            </label>
-                            <select
-                              className="form-control"
-                              onChange={(e) => setCategoryId(e.target.value)}
-                            >
-                              {categories.map((opt) => (
-                                <option value={opt._id}>{opt.category}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
-                              Subcategory <span className="text-danger">*</span>
-                            </label>
-                            <select
-                              className="form-control"
-                              onChange={(e) => setSubcategoryId(e.target.value)}
-                            >
-                              {subcategories.map((opt) => (
-                                <option value={opt._id}>
-                                  {opt.subcategory}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
                               Title <span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Title"
-                              name="name"
+                              placeholder="Enter Title"
                               value={title}
                               onChange={(e) => setTitle(e.target.value)}
                             />
                           </div>
                         </div>
-
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
-                              Zone <span className="text-danger">*</span>
+                              Customer <span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Zone"
-                              name="name"
-                              value={zone}
-                              onChange={(e) => setZone(e.target.value)}
+                              placeholder="Enter Customer"
+                              value={customer}
+                              onChange={(e) => setCustomer(e.target.value)}
                             />
                           </div>
                         </div>
-
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
-                              Type <span className="text-danger">*</span>
+                              Cashback<span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Type"
-                              name="name"
-                              value={type}
-                              onChange={(e) => setType(e.target.value)}
+                              placeholder="Enter Store"
+                              name="store"
+                              value={cashback}
+                              onChange={(e) => setCashback(e.target.value)}
                             />
                           </div>
                         </div>
 
-                        <div className="col-lg-4 col-md-6 col-sm-12">
+                        <div className="col-md-12">
                           <div className="input-block mb-3">
-                            <label>
-                              Seller <span className="text-danger">*</span>
-                            </label>
+                            <label className="form-label">Min purchase</label>
                             <input
                               type="text"
-                              id="mobile_code"
                               className="form-control"
-                              placeholder="Seller"
-                              name="name"
-                              value={seller}
-                              onChange={(e) => setSeller(e.target.value)}
+                              placeholder="Enter Customer"
+                              name="customer"
+                              value={minpurchase}
+                              onChange={(e) => setMinpurchase(e.target.value)}
                             />
-                          </div>
-                        </div>
-
-                        <div className="col-md-6">
-                          <div className="input-block mb-3">
-                            <label>Plan Name</label>
                           </div>
                         </div>
                         <div className="col-md-6">
                           <div className="input-block mb-3">
-                            <label>Plan Type</label>
+                            <label className="form-label">Max Discount</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Code"
+                              name="code"
+                              value={maxdiscount}
+                              onChange={(e) => setMaxdiscount(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="input-block mb-3">
+                            <label className="form-label">Limit</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Limit"
+                              name="limit"
+                              value={limit}
+                              onChange={(e) => setLimit(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="input-block mb-3">
+                            <label className="form-label">Start Date</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Start data"
+                              name="startend"
+                              value={startdate}
+                              onChange={(e) => setStartdate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="input-block mb-3">
+                            <label className="form-label">End Date</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter End Date"
+                              name="Enddate "
+                              value={enddate}
+                              onChange={(e) => setEnddate(e.target.value)}
+                            />
                           </div>
                         </div>
                       </div>

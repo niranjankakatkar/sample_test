@@ -13,56 +13,36 @@ export default function UpdateUser() {
   const { id } = useParams();
 
   const [ID, setID] = useState();
-  const [moduleId, setModuleId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [subcategoryId, setSubcategoryId] = useState("");
-  const [title, setTitle] = useState("");
-  const [zone, setZone] = useState("");
-  const [type, setType] = useState("");
-  const [seller, setSeller] = useState("");
-  //  const [file, setFile] = useState(null);
-
-  const [modules, setModules] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubCategories] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/subcategory/getAllSubcategory")
-      .then((res) => setSubCategories(res.data))
-      .catch((err) => console.error(err));
-
-    axios
-      .get("http://localhost:5000/module/getAllModule")
-      .then((res) => setModules(res.data))
-      .catch((err) => console.error(err));
-
-    axios
-      .get("http://localhost:5000/category/getAllCategory")
-      .then((res) => {
-        setCategories(res.data);
-      })
-      .catch((err) => console.error(err));
-  }, []);
+  const [title, setTitle] = useState();
+  const [description, setDescription] = useState();
+  const [seller, setSeller] = useState();
+  const [priority, setPriority] = useState();
+  const [type, setType] = useState();
+  const [validity, setValidity] = useState();
+  const [review, setReview] = useState();
+  const [rating, setRating] = useState();
+  const [file, setFile] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/banner/editBanner/" + id
+          "http://localhost:5000/advertisement/editAdvertisement/" + id
         );
         console.log(response);
         setID(response.data._id);
-        setModuleId(response.data.moduleId);
-        setCategoryId(response.data.categoryId);
-        setSubcategoryId(response.data.subcategoryId);
         setTitle(response.data.title);
-        setZone(response.data.zone);
-        setType(response.data.type);
+        setDescription(response.data.description);
         setSeller(response.data.seller);
-        // setFile(response.data.file);
+        setPriority(response.data.priority);
+        setType(response.data.type);
+        setValidity(response.data.validity);
+        setReview(response.data.review);
+        setRating(response.data.rating);
+        setFile(response.data.file);
+        //setFileName(response.data.filename);
       } catch (error) {
-        console.log(error);
+        //console.log(error)
       }
     };
     fetchData();
@@ -72,20 +52,25 @@ export default function UpdateUser() {
     e.preventDefault();
     const formData = new FormData();
 
-    formData.append("moduleId", moduleId);
-    formData.append("categoryId", categoryId);
-    formData.append("subcategoryId", subcategoryId);
     formData.append("title", title);
-    formData.append("zone", zone);
-    formData.append("type", type);
+    formData.append("description", description);
     formData.append("seller", seller);
+    formData.append("priority", priority);
+    formData.append("type", type);
+    formData.append("validity", validity);
+    formData.append("review", review);
+    formData.append("rating", rating);
+    formData.append("file", file);
 
     axios
-      .post("http://localhost:5000/banner/editBanner/" + id, formData)
+      .post(
+        "http://localhost:5000/advertisement/editAdvertisement/" + id,
+        formData
+      )
       .then((res) => {
-        //    const loginID = res.data._id;
+        //  const loginID = res.data._id;
         console.log(res);
-
+        
         toast.success("Record Added Successfully", {
           position: "top-right",
           autoClose: 3000,
@@ -100,11 +85,15 @@ export default function UpdateUser() {
           theme: "colored",
           transition: Slide,
         });
-        console.log(err);
+        //console.log(err)
       });
 
-    navigate("/banner");
+    navigate("/advertisement");
   };
+
+  // Creating FormData and appending the form fields
+
+  // Send data to the backend via axios
 
   return (
     <>
@@ -150,99 +139,31 @@ export default function UpdateUser() {
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
-                              Module <span className="text-danger">*</span>
-                            </label>
-                            <select
-                              className="form-control"
-                              onChange={(e) => setModuleId(e.target.value)}
-                            >
-                              {modules.map((opt) => (
-                                <option value={opt._id}>{opt.module}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
-                              Category <span className="text-danger">*</span>
-                            </label>
-                            <select
-                              className="form-control"
-                              onChange={(e) => setCategoryId(e.target.value)}
-                            >
-                              {categories.map((opt) => (
-                                <option value={opt._id}>{opt.category}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
-                              Subcategory <span className="text-danger">*</span>
-                            </label>
-                            <select
-                              className="form-control"
-                              onChange={(e) => setSubcategoryId(e.target.value)}
-                            >
-                              {subcategories.map((opt) => (
-                                <option value={opt._id}>
-                                  {opt.subcategory}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
                               Title <span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Title"
-                              name="name"
+                              placeholder="Enter Title"
                               value={title}
                               onChange={(e) => setTitle(e.target.value)}
                             />
                           </div>
                         </div>
-
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
-                              Zone <span className="text-danger">*</span>
+                              Description<span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Zone"
-                              name="name"
-                              value={zone}
-                              onChange={(e) => setZone(e.target.value)}
+                              placeholder="Enter Description"
+                              value={description}
+                              onChange={(e) => setDescription(e.target.value)}
                             />
                           </div>
                         </div>
-
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
-                              Type <span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Type"
-                              name="name"
-                              value={type}
-                              onChange={(e) => setType(e.target.value)}
-                            />
-                          </div>
-                        </div>
-
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
@@ -250,24 +171,82 @@ export default function UpdateUser() {
                             </label>
                             <input
                               type="text"
-                              id="mobile_code"
                               className="form-control"
-                              placeholder="Seller"
-                              name="name"
+                              placeholder="Enter Seller"
                               value={seller}
                               onChange={(e) => setSeller(e.target.value)}
                             />
                           </div>
                         </div>
 
-                        <div className="col-md-6">
+                        <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
-                            <label>Plan Name</label>
+                            <label>
+                              Priority <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Priority"
+                              value={priority}
+                              onChange={(e) => setPriority(e.target.value)}
+                            />
                           </div>
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
-                            <label>Plan Type</label>
+                            <label>
+                              Type<span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Type"
+                              value={type}
+                              onChange={(e) => setType(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Validity<span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Validity"
+                              value={validity}
+                              onChange={(e) => setValidity(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Review<span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Review"
+                              value={review}
+                              onChange={(e) => setReview(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Rating<span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Rating"
+                              value={rating}
+                              onChange={(e) => setRating(e.target.value)}
+                            />
                           </div>
                         </div>
                       </div>

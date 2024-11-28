@@ -23,10 +23,9 @@ export default function PushNotification() {
   const [activeCount, setActiveCount] = useState();
   const [inactiveCount, setInactiveCount] = useState();
 
-
   useEffect(() => {
     axios
-      .get("http://43.205.22.150:5000/pushnotification/getAllBanner")
+      .get("http://43.205.22.150:5000/pushnotification/getAllPushNotification")
       .then((res) => {
         //console.log(res);
         setData(res.data);
@@ -64,14 +63,20 @@ export default function PushNotification() {
       .catch((err) => console.error(err));
   }, []);
 
-  const handleDelete = (id) => {
+  let ddid;
+
+  const handleDelete = () => {
     axios
-      .delete("http://43.205.22.150:5000/pushnotification/deletePushnotification/" + id)
+      .delete("http://localhost:5000/pushnotification/deleteSinglePushNotification/" + ddid)
       .then((res) => {
-        //console.log(res);
-        navigate("/pushnotification");
+        console.log(res);
+        window.location.reload();
       })
       .catch((err) => console.error(err));
+  };
+
+  const setDeleteID = (d_id) => {
+    ddid = d_id;
   };
 
   const handleSubmit = (e) => {
@@ -88,7 +93,10 @@ export default function PushNotification() {
     formData.append("file", file);
 
     axios
-      .post("http://43.205.22.150:5000/pushnotification/createPushNotificationImg", formData)
+      .post(
+        "http://43.205.22.150:5000/pushnotification/createPushNotificationImg",
+        formData
+      )
       .then((res) => {
         //console.log(res);
         toast.success("Record Added Successfully", {
@@ -384,29 +392,27 @@ export default function PushNotification() {
                                           <li>
                                             <Link
                                               className="dropdown-item"
-                                              to={`/banner_detail/${user._id}`}
+                                              to={`/pushnotification-detail/${user._id}`}
                                             >
                                               <i className="far fa-eye me-2"></i>
-                                              View Advertise Details
+                                              View Notification Details
                                             </Link>
                                           </li>
                                           <li>
-                                            <a
+                                            <Link
                                               className="dropdown-item"
-                                              href="javascript:void(0);"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#edit_companies"
+                                              to={`/editpushnotification/${user._id}`}
                                             >
                                               <i className="fe fe-edit me-2"></i>
                                               Edit
-                                            </a>
+                                            </Link>
                                           </li>
                                           <li className="delete-alt">
                                             <div>
                                               <a
                                                 className="dropdown-item"
                                                 onClick={() =>
-                                                  handleDelete(user._id)
+                                                  setDeleteID(user._id)
                                                 }
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#delete_modal"
@@ -463,6 +469,7 @@ export default function PushNotification() {
                   <div className="modal-footer justify-content-center p-0">
                     <button
                       type="submit"
+                      onClick={() => handleDelete()}
                       data-bs-dismiss="modal"
                       className="btn btn-primary paid-continue-btn me-2"
                     >

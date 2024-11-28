@@ -6,7 +6,7 @@ import Navbar from "../Navbar";
 
 export default function Cashback() {
   const navigate = useNavigate();
-  
+
   const [data, setData] = useState([]);
 
   const [title, setTitle] = useState();
@@ -24,10 +24,9 @@ export default function Cashback() {
   const [activeCount, setActiveCount] = useState();
   const [inactiveCount, setInactiveCount] = useState();
 
-
   useEffect(() => {
     axios
-      .get("http://43.205.22.150:5000/cashback/getAllCoupon")
+      .get("http://localhost:5000/cashback/getAllCashback")
       .then((res) => {
         //console.log(res);
         setData(res.data);
@@ -65,14 +64,20 @@ export default function Cashback() {
       .catch((err) => console.error(err));
   }, []);
 
-  const handleDelete = (id) => {
+  let ddid;
+
+  const handleDelete = () => {
     axios
-      .delete("http://43.205.22.150:5000/cashback/deleteCashback/" + id)
+      .delete("http://localhost:5000/cashback/deleteSingleCashback/" + ddid)
       .then((res) => {
-        //console.log(res);
-        navigate("/cashback");
+        console.log(res);
+        window.location.reload();
       })
       .catch((err) => console.error(err));
+  };
+
+  const setDeleteID = (d_id) => {
+    ddid = d_id;
   };
 
   const handleSubmit = (e) => {
@@ -367,6 +372,7 @@ export default function Cashback() {
                                   <td>{user.maxdiscount}</td>
                                   <td>{user.startdate}</td>
                                   <td>{user.enddate}</td>
+                                  <td>{user.limit}</td>
 
                                   {/* <td>
                                     <a href="" className="__cf_email__">
@@ -394,29 +400,27 @@ export default function Cashback() {
                                           <li>
                                             <Link
                                               className="dropdown-item"
-                                              to={`/coupon_detail/${user._id}`}
+                                              to={`/cashback-detail/${user._id}`}
                                             >
                                               <i className="far fa-eye me-2"></i>
                                               View Cashback Details
                                             </Link>
                                           </li>
                                           <li>
-                                            <a
+                                            <Link
                                               className="dropdown-item"
-                                              href="javascript:void(0);"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#edit_companies"
+                                              to={`/editcashback/${user._id}`}
                                             >
                                               <i className="fe fe-edit me-2"></i>
                                               Edit
-                                            </a>
+                                            </Link>
                                           </li>
                                           <li className="delete-alt">
                                             <div>
                                               <a
                                                 className="dropdown-item"
                                                 onClick={() =>
-                                                  handleDelete(user._id)
+                                                  setDeleteID(user._id)
                                                 }
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#delete_modal"
@@ -473,6 +477,7 @@ export default function Cashback() {
                   <div className="modal-footer justify-content-center p-0">
                     <button
                       type="submit"
+                      onClick={() => handleDelete()}
                       data-bs-dismiss="modal"
                       className="btn btn-primary paid-continue-btn me-2"
                     >

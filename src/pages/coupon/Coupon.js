@@ -6,7 +6,7 @@ import Navbar from "../Navbar";
 
 export default function Banner() {
   const navigate = useNavigate();
-  
+
   const [data, setData] = useState([]);
 
   const [title, setTitle] = useState();
@@ -27,8 +27,6 @@ export default function Banner() {
   const [allCount, setAllCount] = useState();
   const [activeCount, setActiveCount] = useState();
   const [inactiveCount, setInactiveCount] = useState();
-
-  
 
   useEffect(() => {
     axios
@@ -70,14 +68,20 @@ export default function Banner() {
       .catch((err) => console.error(err));
   }, []);
 
-  const handleDelete = (id) => {
+  let ddid;
+
+  const handleDelete = () => {
     axios
-      .delete("http://43.205.22.150:5000/coupon/deleteCoupon/" + id)
+      .delete("http://localhost:5000/coupon/deleteSingleCoupon/" + ddid)
       .then((res) => {
-        //console.log(res);
-        navigate("/coupon");
+        console.log(res);
+        window.location.reload();
       })
       .catch((err) => console.error(err));
+  };
+
+  const setDeleteID = (d_id) => {
+    ddid = d_id;
   };
 
   const handleSubmit = (e) => {
@@ -410,29 +414,27 @@ export default function Banner() {
                                           <li>
                                             <Link
                                               className="dropdown-item"
-                                              to={`/coupon_detail/${user._id}`}
+                                              to={`/coupon-detail/${user._id}`}
                                             >
                                               <i className="far fa-eye me-2"></i>
                                               View Coupon Details
                                             </Link>
                                           </li>
                                           <li>
-                                            <a
+                                            <Link
                                               className="dropdown-item"
-                                              href="javascript:void(0);"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#edit_companies"
+                                              to={`/editcoupon/${user._id}`}
                                             >
                                               <i className="fe fe-edit me-2"></i>
                                               Edit
-                                            </a>
+                                            </Link>
                                           </li>
                                           <li className="delete-alt">
                                             <div>
                                               <a
                                                 className="dropdown-item"
                                                 onClick={() =>
-                                                  handleDelete(user._id)
+                                                  setDeleteID(user._id)
                                                 }
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#delete_modal"
@@ -489,6 +491,7 @@ export default function Banner() {
                   <div className="modal-footer justify-content-center p-0">
                     <button
                       type="submit"
+                      onClick={() => handleDelete()}
                       data-bs-dismiss="modal"
                       className="btn btn-primary paid-continue-btn me-2"
                     >

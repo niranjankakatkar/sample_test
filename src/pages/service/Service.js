@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Slide, toast } from "react-toastify";
 import axios from "axios";
+import Navbar from "../Navbar";
 
 export default function User() {
   const navigate = useNavigate();
@@ -41,6 +42,14 @@ export default function User() {
       })
       .catch((err) => console.error(err));
 
+      axios
+      .get("http://43.205.22.150:5000/subcategory/getAllSubcategory")
+      .then((res) => {
+       // setCategories(res.data);
+        setFilteredSubcategories(res.data); // Initially set filtered categories
+      })
+      .catch((err) => console.error(err));
+
     //Ge tALL Count
     axios
       .get("http://43.205.22.150:5000/service/getAllCnt")
@@ -76,12 +85,12 @@ export default function User() {
     if (category) {
       axios
         .get(
-          `http://43.205.22.150:5000/subcategory/getSubcategoriesByCategory/${category._id}`
+          `http://localhost:5000/subcategory/getSubcategoriesByCategory/${category._id}`
         )
-        .then((res) => setFilteredSubcategories(res.data))
+        .then((res) =>  console.log(res.data))
         .catch((err) => console.error(err));
     } else {
-      setFilteredSubcategories([]); // Reset subcategories if no category is selected
+       // Reset subcategories if no category is selected
     }
   }, [category]);
 
@@ -128,7 +137,12 @@ export default function User() {
 
   return (
     <>
+      <div className="main-wrapper">
+
+<Navbar></Navbar>
+<div className="page-wrapper">
       <div className="content container-fluid">
+      
         <div className="page-header">
           <div className="content-page-header">
             <h5>Services</h5>
@@ -551,6 +565,12 @@ export default function User() {
                     <div className="form-field-item">
                       <h5 className="form-title">Category</h5>
                       <div className="input-block mb-3">
+                      <select className="form-control"  onChange={(e) => setCategory(e.target.value)} >
+                         {
+                          categories.map(opt=><option value={opt._id} >{opt.category}</option>)
+                         }
+                         
+                        </select>
                         
                       </div>
                     </div>
@@ -560,7 +580,12 @@ export default function User() {
                     <div className="form-field-item">
                       <h5 className="form-title">Subcategory</h5>
                       <div className="input-block mb-3">
-                        
+                      <select className="form-control"  onChange={(e) => setSubcategory(e.target.value)} >
+                         {
+                          filteredSubcategories.map(opt=><option value={opt._id} >{opt.subcategory}</option>)
+                         }
+                         
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -1168,6 +1193,9 @@ export default function User() {
             </form>
           </div>
         </div>
+      </div>
+
+      </div>
       </div>
     </>
   );

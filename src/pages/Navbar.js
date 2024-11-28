@@ -426,7 +426,7 @@ export default function Navbar() {
                 </Link>
               </li>
               <li>
-                <Link to="/servicetab">
+                <Link to="/service">
                 <i className="fa-solid fa-server"></i>
                   <span>Services</span>
                 </Link>

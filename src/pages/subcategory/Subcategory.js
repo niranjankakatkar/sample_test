@@ -34,13 +34,7 @@ export default function User() {
       .then((res) => setModules(res.data))
       .catch((err) => console.error(err));
 
-    axios
-      .get("http://43.205.22.150:5000/category/getAllCategory")
-      .then((res) => {
-        setCategories(res.data);
-        setFilteredCategories(res.data); // Initially set filtered categories
-      })
-      .catch((err) => console.error(err));
+  
   }, []);
 
   // Fetch categories based on selected module
@@ -48,12 +42,12 @@ export default function User() {
     if (module) {
       axios
         .get(
-          `http://43.205.22.150:5000/category/getCategoriesByModule/${module._id}`
+          `http://localhost:5000/category/getCategoriesByModule/${module}`
         )
         .then((res) => setFilteredCategories(res.data))
         .catch((err) => console.error(err));
     } else {
-      setFilteredCategories([]); // Reset categories if no module is selected
+       // Reset categories if no module is selected
     }
   }, [module]);
 
@@ -71,10 +65,11 @@ export default function User() {
     e.preventDefault();
     const formData = new FormData();
     formData.append("file", file); // assuming you have the file in `file` state
-    formData.append("moduleId", module._id); // Ensure the `module._id` exists
-    formData.append("categoryId", category._id); // Ensure the `category._id` exists
+    formData.append("moduleId", module); // Ensure the `module._id` exists
+    formData.append("categoryId", category); // Ensure the `category._id` exists
     formData.append("subcategory", subcategory);
     formData.append("activeFlag", activeFlag);
+    console.log("1111111"+module);
 
     axios
       .post(
@@ -328,8 +323,7 @@ export default function User() {
                               <th>Sub-category</th>
                               {/* <th>Email</th>
                               <th>Mobile Number</th> */}
-                              <th>Plan</th>
-                              <th>Created Date</th>
+                              
                               <th>Status</th>
                               <th className="no-sort">Action</th>
                             </tr>
@@ -362,8 +356,7 @@ export default function User() {
                                     </a>
                                   </td>
                                   <td>{user.mobileno}</td> */}
-                                  <td>Advanced (Monthly)</td>
-                                  <td>19 Jan 2024</td>
+                                 
                                   <td>
                                     <span className="badge bg-success-light d-inline-flex align-items-center">
                                       <i className="fe fe-check me-1"></i>Active
@@ -544,19 +537,34 @@ export default function User() {
 
                     <div className="col-md-6">
                       <div className="input-block mb-3">
+                      <label>Module </label>
+                        <select className="select form-control"  onChange={(e) => setModule(e.target.value)} >
+                         {
+                          modules.map(opt=><option value={opt._id} >{opt.module}</option>)
+                         }
+                         
+                        </select>
                         
                       </div>
                     </div>
 
                     <div className="col-md-6">
                       <div className="input-block mb-3">
-                      
+                      <label>Category </label>
+                        <select className="form-control"  onChange={(e) => setCategory(e.target.value)} >
+                         {
+                          filteredCategories.map(opt=><option value={opt._id} >{opt.category}</option>)
+                         }
+                         
+                        </select>
                       </div>
                     </div>
 
                     <div className="col-md-6">
                       <div className="input-block mb-3">
-                        
+                        <label className="form-label">Sub Category </label>
+                        <input type="text" className="form-control" placeholder="Enter User Name" name="name" value={subcategory} onChange={(e) => setSubcategory(e.target.value)} />
+                         
                       </div>
                     </div>
 

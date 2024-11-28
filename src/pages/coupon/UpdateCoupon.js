@@ -16,10 +16,19 @@ export default function UpdateUser() {
   const [moduleId, setModuleId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [subcategoryId, setSubcategoryId] = useState("");
-  const [title, setTitle] = useState("");
-  const [zone, setZone] = useState("");
-  const [type, setType] = useState("");
-  const [seller, setSeller] = useState("");
+  const [title, setTitle] = useState();
+  const [coupontype, setCoupontype] = useState();
+  const [store, setStore] = useState();
+  const [customer, setCustomer] = useState();
+  const [code, setCode] = useState();
+  const [limit, setLimit] = useState();
+  const [startdate, setStartdate] = useState(null);
+  const [enddate, setEnddate] = useState(null);
+  const [discounttype, setDiscounttype] = useState();
+  const [discount, setDiscount] = useState();
+  const [maxdiscount, setMaxdiscount] = useState();
+  const [mindiscount, setMindiscount] = useState();
+
   //  const [file, setFile] = useState(null);
 
   const [modules, setModules] = useState([]);
@@ -57,9 +66,17 @@ export default function UpdateUser() {
         setCategoryId(response.data.categoryId);
         setSubcategoryId(response.data.subcategoryId);
         setTitle(response.data.title);
-        setZone(response.data.zone);
-        setType(response.data.type);
-        setSeller(response.data.seller);
+        setCoupontype(response.data.coupontype);
+        setStore(response.data.store);
+        setCustomer(response.data.customer);
+        setCode(response.data.code);
+        setLimit(response.data.limit);
+        setStartdate(response.data.startdate);
+        setEnddate(response.data.enddate);
+        setDiscounttype(response.data.discounttype);
+        setDiscount(response.data.discount);
+        setMaxdiscount(response.data.maxdiscount);
+        setMindiscount(response.data.mindiscount);
         // setFile(response.data.file);
       } catch (error) {
         console.log(error);
@@ -76,12 +93,20 @@ export default function UpdateUser() {
     formData.append("categoryId", categoryId);
     formData.append("subcategoryId", subcategoryId);
     formData.append("title", title);
-    formData.append("zone", zone);
-    formData.append("type", type);
-    formData.append("seller", seller);
+    formData.append("coupontype", coupontype);
+    formData.append("store", store);
+    formData.append("customer", customer);
+    formData.append("code", code);
+    formData.append("limit", limit);
+    formData.append("startdate", startdate);
+    formData.append("enddate", enddate);
+    formData.append("discounttype", discounttype);
+    formData.append("discount", discount);
+    formData.append("maxdiscount", maxdiscount);
+    formData.append("mindiscount", mindiscount);
 
     axios
-      .post("http://localhost:5000/banner/editBanner/" + id, formData)
+      .post("http://localhost:5000/coupon/editCoupon/" + id, formData)
       .then((res) => {
         //    const loginID = res.data._id;
         console.log(res);
@@ -103,7 +128,7 @@ export default function UpdateUser() {
         console.log(err);
       });
 
-    navigate("/banner");
+    navigate("/coupon");
   };
 
   return (
@@ -115,7 +140,7 @@ export default function UpdateUser() {
             <div className="card-body">
               <div className="page-header">
                 <div className="content-page-header">
-                  <h5>Edit Customer</h5>
+                  <h5>Edit Coupon</h5>
                 </div>
               </div>
 
@@ -214,15 +239,15 @@ export default function UpdateUser() {
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
-                              Zone <span className="text-danger">*</span>
+                              Coupon Type <span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Zone"
+                              placeholder="Coupon Type"
                               name="name"
-                              value={zone}
-                              onChange={(e) => setZone(e.target.value)}
+                              value={coupontype}
+                              onChange={(e) => setCoupontype(e.target.value)}
                             />
                           </div>
                         </div>
@@ -230,15 +255,15 @@ export default function UpdateUser() {
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
-                              Type <span className="text-danger">*</span>
+                              Store <span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Type"
+                              placeholder="Store"
                               name="name"
-                              value={type}
-                              onChange={(e) => setType(e.target.value)}
+                              value={store}
+                              onChange={(e) => setStore(e.target.value)}
                             />
                           </div>
                         </div>
@@ -246,16 +271,155 @@ export default function UpdateUser() {
                         <div className="col-lg-4 col-md-6 col-sm-12">
                           <div className="input-block mb-3">
                             <label>
-                              Seller <span className="text-danger">*</span>
+                              Customer <span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               id="mobile_code"
                               className="form-control"
-                              placeholder="Seller"
+                              placeholder="Customer"
                               name="name"
-                              value={seller}
-                              onChange={(e) => setSeller(e.target.value)}
+                              value={customer}
+                              onChange={(e) => setCustomer(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Code <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              id="mobile_code"
+                              className="form-control"
+                              placeholder="Code"
+                              name="name"
+                              value={code}
+                              onChange={(e) => setCode(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Limit <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              id="mobile_code"
+                              className="form-control"
+                              placeholder="Limit"
+                              name="name"
+                              value={limit}
+                              onChange={(e) => setLimit(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Startdate <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              id="mobile_code"
+                              className="form-control"
+                              placeholder="Startdate"
+                              name="name"
+                              value={startdate}
+                              onChange={(e) => setStartdate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Enddate <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              id="mobile_code"
+                              className="form-control"
+                              placeholder="End date"
+                              name="name"
+                              value={enddate}
+                              onChange={(e) => setEnddate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Discount Type{" "}
+                              <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              id="mobile_code"
+                              className="form-control"
+                              placeholder="Discount Type"
+                              name="name"
+                              value={discounttype}
+                              onChange={(e) => setDiscounttype(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Discount <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              id="mobile_code"
+                              className="form-control"
+                              placeholder="Discount"
+                              name="name"
+                              value={discount}
+                              onChange={(e) => setDiscount(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Max Discount{" "}
+                              <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              id="mobile_code"
+                              className="form-control"
+                              placeholder="Max Discount"
+                              name="name"
+                              value={maxdiscount}
+                              onChange={(e) => setMaxdiscount(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-lg-4 col-md-6 col-sm-12">
+                          <div className="input-block mb-3">
+                            <label>
+                              Min Discount{" "}
+                              <span className="text-danger">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              id="mobile_code"
+                              className="form-control"
+                              placeholder="Customer"
+                              name="name"
+                              value={mindiscount}
+                              onChange={(e) => setMindiscount(e.target.value)}
                             />
                           </div>
                         </div>

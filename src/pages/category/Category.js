@@ -88,6 +88,8 @@ export default function User() {
     formData.append("category", category);
     formData.append("activeFlag", activeFlag);
 
+    console.log("11111"+module);
+
     axios
       .post("http://43.205.22.150:5000/category/createCategoryImg", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -347,17 +349,21 @@ export default function User() {
                             {data.map((user, index) => {
                               return (
                                 <tr key={index}>
-                                  <td>{index + 1}</td>
+                                  <td>1</td>
                                   <td>
-                                   {
-                                     /* axios
-                                      .get("http://43.205.22.150:5000/module/getAllModule")
-                                      .then((res) => setModules(res.data))
-                                      .catch((err) => console.error(err))
-                                      user.moduleId*/
-                                   
-                                   }
-                                    
+                                    <h2 className="table-avatar">
+                                      <a
+                                        href="profile.html"
+                                        className="company-avatar avatar-md me-2 companies company-icon"
+                                      >
+                                        <img
+                                          className="avatar-img rounded-circle company"
+                                          src="assets/img/companies/company-01.svg"
+                                          alt="Company Image"
+                                        />
+                                      </a>
+                                      <a href="#">{user.module}</a>
+                                    </h2>
                                   </td>
                                   <td>{user.category}</td>
                                   {/* <td>
@@ -539,7 +545,7 @@ export default function User() {
                     <div className="col-md-6">
                       <div className="input-block mb-3">
                         <label>Module </label>
-                        <select className="form-control" onChange={(e) => setModule(e.target.value)} >
+                        <select className="form-control" onChange={(e) => setModule(e.target.value)}>
                          {
                           modules.map(opt=><option value={opt._id} >{opt.module}</option>)
                          }
