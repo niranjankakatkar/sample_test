@@ -30,6 +30,17 @@ import PushNotification from "./pages/pushnotification/PushNotification";
 import AddPushNotification from "./pages/pushnotification/AddPushNotification";
 import Packages from "./pages/packages/packages";
 
+import BannerEdit from "./pages/banner/UpdateBanner";
+import Banner_Details from "./pages/banner/Banner_Details";
+import CouponEdit from "./pages/coupon/UpdateCoupon";
+import Coupon_Details from "./pages/coupon/Coupon_Details";
+import CashbackEdit from "./pages/cashback/UpdateCashback";
+import Cashback_Details from "./pages/cashback/Cashback_Details";
+import PushNotificationEdit from "./pages/pushnotification/UpdatePushNotification";
+import PushNotification_Details from "./pages/pushnotification/PushNotification_Details";
+import AdvertisementEdit from "./pages/advertisement/UpdateAdvertisement";
+import Advertisement_Details from "./pages/advertisement/Advertisement_Details";
+
 import Udashboard from "./pages/Udashboard/Dashboard";
 import Sdashboard from "./pages/Sdashboard/Dashboard";
 
@@ -72,6 +83,17 @@ function App() {
       <Route path="/pushnotification" element={<PushNotification />}></Route>
       <Route path="/addpushnotification" element={<AddPushNotification />}></Route>
       <Route path="/packges" element={<Packages />}></Route>
+      <Route path="/advertisement-detail/:id" element={<Advertisement_Details />}></Route>
+      <Route path="/editadvertisement/:id" element={<AdvertisementEdit />}></Route>
+      <Route path="/banner-detail/:id" element={<Banner_Details />}></Route>
+      <Route path="/editbanner/:id" element={<BannerEdit />}></Route>
+      <Route path="/coupon-detail/:id" element={<Coupon_Details />}></Route>
+      <Route path="/editcoupon/:id" element={<CouponEdit />}></Route>
+      <Route path="/cashback-detail/:id" element={<Cashback_Details />}></Route>
+      <Route path="/editcashback/:id" element={<CashbackEdit />}></Route>
+      <Route path="/pushnotification-detail/:id" element={<PushNotification_Details />}></Route>
+      <Route path="/editpushnotification/:id" element={<PushNotificationEdit />}></Route>
+
     </Routes>
   </Router>
   );
