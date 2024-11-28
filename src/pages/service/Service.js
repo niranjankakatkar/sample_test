@@ -132,7 +132,7 @@ export default function User() {
         });
         //console.log(err);
       });
-    navigate("/servicetab");
+    navigate("/service");
   };
 
   return (
