@@ -116,6 +116,8 @@ export default function User() {
       .post("http://43.205.22.150:5000/service/createServiceImg", formData)
       .then((res) => {
         //console.log(res);
+
+        window.location.reload();
         toast.success("Record Added Successfully", {
           position: "top-right",
           autoClose: 3000,
