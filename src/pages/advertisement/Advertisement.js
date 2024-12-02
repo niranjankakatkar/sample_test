@@ -21,6 +21,20 @@ export default function Advertisement() {
   const [allCount, setAllCount] = useState();
   const [activeCount, setActiveCount] = useState();
   const [inactiveCount, setInactiveCount] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2; // Number of items to display per page
+
+  // Logic to calculate the index range for the current page
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = data.slice(startIndex, startIndex + itemsPerPage);
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -350,7 +364,7 @@ export default function Advertisement() {
                             </tr>
                           </thead>
                           <tbody>
-                            {data.map((user, index) => {
+                          {currentData.map((user, index) => {
                               return (
                                 <tr key={index}>
                                   <td>{index + 1}</td>
@@ -448,6 +462,46 @@ export default function Advertisement() {
                             })}
                           </tbody>
                         </table>
+                        <div
+                          className="pagination-container"
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            alignItems: "center",
+                            marginTop: "16px",
+                          }}
+                        >
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            style={{
+                              backgroundColor: "#7539ff",
+                              color: "white",
+                            }}
+                          >
+                            Previous
+                          </button>
+
+                          <span
+                            className="page-info"
+                            style={{ margin: "0 8px" }}
+                          >
+                            Page {currentPage} of {totalPages}
+                          </span>
+
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            style={{
+                              backgroundColor: "#07bc0c",
+                              color: "white",
+                            }}
+                          >
+                            Next
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

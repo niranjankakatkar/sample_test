@@ -12,18 +12,52 @@ export default function UpdatePushNotification() {
   const [data, setData] = useState([]);
 
   const { id } = useParams();
-
   const [ID, setID] = useState();
-  const [title, setTitle] = useState();
-  const [description, setDescription] = useState();
-  const [seller, setSeller] = useState();
-  const [priority, setPriority] = useState();
-  const [type, setType] = useState();
-  const [validity, setValidity] = useState();
-  const [review, setReview] = useState();
-  const [rating, setRating] = useState();
+  const [moduleId, setModuleId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [subcategoryId, setSubcategoryId] = useState("");
+  const [title, setTitle] = useState("");
+  const [zone, setZone] = useState("");
+  const [sendto, setSendto] = useState("");
+  const [description, setDescription] = useState("");
+  const [activeFlag, setActiveFlag] = useState(true);
+  const [file, setFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
-  const [file, setFile] = useState();
+  const [modules, setModules] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubCategories] = useState([]);
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    moduleId: "",
+    categoryId: "",
+    subcategoryId: "",
+    title: "",
+    zone: "",
+    sendto: "",
+    description: "",
+    file: "",
+  });
+
+  useEffect(() => {
+    axios
+      .get("http://43.205.22.150:5000/subcategory/getAllSubcategory")
+      .then((res) => setSubCategories(res.data))
+      .catch((err) => console.error(err));
+
+    axios
+      .get("http://43.205.22.150:5000/module/getAllModule")
+      .then((res) => setModules(res.data))
+      .catch((err) => console.error(err));
+
+    axios
+      .get("http://43.205.22.150:5000/category/getAllCategory")
+      .then((res) => {
+        setCategories(res.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,14 +67,13 @@ export default function UpdatePushNotification() {
         );
         console.log(response);
         setID(response.data._id);
-        setTitle(response.data.title);
+        setModuleId(response.data.moduleId);
+        setCategoryId(response.data.categoryId);
+        setSubcategoryId(response.data.categoryId);
+        setZone(response.data.zone);
+        setSendto(response.data.sendto);
         setDescription(response.data.description);
-        setSeller(response.data.seller);
-        setPriority(response.data.priority);
-        setType(response.data.type);
-        setValidity(response.data.validity);
-        setReview(response.data.review);
-        setRating(response.data.rating);
+
         setFile(response.data.file);
 
         //setFileName(response.data.filename);
@@ -51,18 +84,57 @@ export default function UpdatePushNotification() {
     fetchData();
   }, []);
 
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    if (selectedFile) {
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!moduleId) formErrors.moduleId = "Module is required.";
+    if (!categoryId) formErrors.categoryId = "Category is required.";
+    if (!subcategoryId) formErrors.subcategoryId = "Subcategory is required.";
+    if (!title) formErrors.title = "Title is required.";
+    if (!zone) formErrors.zone = "Zone is required.";
+    if (!sendto) formErrors.sendto = "Sendto is required.";
+    if (!description) formErrors.description = "Description is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
 
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("moduleId", moduleId);
+    formData.append("categoryId", categoryId);
+    formData.append("subcategoryId", subcategoryId);
     formData.append("title", title);
+    formData.append("zone", zone);
+    formData.append("sendto", sendto);
     formData.append("description", description);
-    formData.append("seller", seller);
-    formData.append("priority", priority);
-    formData.append("type", type);
-    formData.append("validity", validity);
-    formData.append("review", review);
-    formData.append("rating", rating);
     formData.append("file", file);
 
     axios
@@ -73,9 +145,6 @@ export default function UpdatePushNotification() {
       .then((res) => {
         //  const loginID = res.data._id;
         console.log(res);
-        //axios.post('http://43.205.22.150:5000/auth/createAuth', { id,name, email, mobileno })
-        //.then(res1=>{ //console.log("---------"+res1);})
-        //.catch .catch(err1=>{ //console.log("-------"+err1);})
 
         toast.success("Record Added Successfully", {
           position: "top-right",
@@ -94,46 +163,6 @@ export default function UpdatePushNotification() {
         //console.log(err)
       });
 
-    /*  axios.post('http://43.205.22.150:5000/user/uploadimg',formData)
-      .then(res=>{
-          //console.log(res);
-         
-         
-      })
-      .catch(err=>{
-        
-      })*/
-    /*
-    try {
-        const response=fetch("http://43.205.22.150:5000/user/createUser",{
-            method:"POST",
-            headers:{
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
-        })
-        const result=(await response).json();
-        //console.log(result);
-        toast.success('Record Added Successfully', {
-            position: "top-right",
-            autoClose: 3000,
-            theme: "colored",
-            transition: Slide,
-            });
-        navigate("/user");
-        
-       
-    } catch (error) {
-        //console.log(error.message);
-    }finally{
-        setFormData({
-            name:"",
-            email:"",
-            mobileno:"",
-            password:"",
-            activeFlag:""
-        })
-    }*/
     navigate("/pushnotification");
   };
 
@@ -161,11 +190,14 @@ export default function UpdatePushNotification() {
                       <h5 className="form-title">Basic Details</h5>
                       <div className="profile-picture">
                         <div className="upload-profile">
-                          <div className="profile-img">
+                          <div className="profile-img company-profile-img">
                             <img
                               id="blah"
                               className="avatar"
-                              src="../assets/img/profiles/avatar-14.jpg"
+                              src={
+                                imagePreview ||
+                                "assets/img/companies/company-add-img.svg"
+                              }
                               alt="profile-img"
                             />
                           </div>
@@ -176,119 +208,164 @@ export default function UpdatePushNotification() {
                         </div>
                         <div className="img-upload">
                           <label className="btn btn-upload">
-                            Upload <input type="file" />
+                            Upload{" "}
+                            <input
+                              type="file"
+                              accept="image/png,image/jpg,image/jpeg"
+                              onChange={handleFileChange}
+                            />
                           </label>
                           <a className="btn btn-remove">Remove</a>
+                          {errors.file && (
+                            <div style={{ color: "red", fontSize: "0.85em" }}>
+                              {errors.file}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-lg-4 col-md-6 col-sm-12">
+                        <div className="col-md-6">
                           <div className="input-block mb-3">
-                            <label>
-                              Title <span className="text-danger">*</span>
+                            <label className="form-label">Module Name</label>
+                            <select
+                              className="form-control"
+                              value={moduleId}
+                              onChange={(e) => setModuleId(e.target.value)}
+                            >
+                              <option value="">Select Module</option>
+                              {modules.map((module) => (
+                                <option key={module._id} value={module._id}>
+                                  {module.module}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.moduleId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.moduleId}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="input-block mb-3">
+                            <label className="form-label">Category Name</label>
+                            <select
+                              className="form-control"
+                              value={categoryId}
+                              onChange={(e) => setCategoryId(e.target.value)}
+                            >
+                              <option value="">Select Category</option>
+                              {categories.map((category) => (
+                                <option key={category._id} value={category._id}>
+                                  {category.category}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.categoryId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.categoryId}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="input-block mb-3">
+                            <label className="form-label">
+                              Subcategory Name
                             </label>
+                            <select
+                              className="form-control"
+                              value={subcategoryId}
+                              onChange={(e) => setSubcategoryId(e.target.value)}
+                            >
+                              <option value="">Select Subcategory</option>
+                              {subcategories.map((subcategory) => (
+                                <option
+                                  key={subcategory._id}
+                                  value={subcategory._id}
+                                >
+                                  {subcategory.subcategory}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.subcategoryId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.subcategoryId}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="input-block mb-3">
+                            <label className="form-label">Title Name</label>
                             <input
                               type="text"
                               className="form-control"
                               placeholder="Enter Title"
+                              name="title"
                               value={title}
                               onChange={(e) => setTitle(e.target.value)}
                             />
-                          </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
-                              Description <span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter Description"
-                              value={description}
-                              onChange={(e) => setDescription(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 col-sm-12">
-                          <div className="input-block mb-3">
-                            <label>
-                              Seller <span className="text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter Seller"
-                              name="seller"
-                              value={seller}
-                              onChange={(e) => setSeller(e.target.value)}
-                            />
+                            {errors.title && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.title}
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        <div className="col-md-12">
-                          <div className="input-block mb-3">
-                            <label className="form-label">Priority</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter Priority"
-                              name="priority"
-                              value={priority}
-                              onChange={(e) => setPriority(e.target.value)}
-                            />
-                          </div>
-                        </div>
                         <div className="col-md-6">
                           <div className="input-block mb-3">
-                            <label className="form-label">Type</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter Type"
-                              name="type"
-                              value={type}
-                              onChange={(e) => setType(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="input-block mb-3">
-                            <label className="form-label">Validity</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter Validity"
-                              name="validity"
-                              value={validity}
-                              onChange={(e) => setValidity(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="input-block mb-3">
-                            <label className="form-label">Review</label>
+                            <label className="form-label">Zone</label>
                             <input
                               type="text"
                               className="form-control"
                               placeholder="Enter Review"
-                              name="review"
-                              value={review}
-                              onChange={(e) => setReview(e.target.value)}
+                              name="zone"
+                              value={zone}
+                              onChange={(e) => setZone(e.target.value)}
                             />
+                            {errors.zone && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.zone}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="col-md-6">
                           <div className="input-block mb-3">
-                            <label className="form-label">Rating</label>
+                            <label className="form-label">Send to</label>
                             <input
                               type="text"
                               className="form-control"
-                              placeholder="Enter Rating"
-                              name="rating"
-                              value={rating}
-                              onChange={(e) => setRating(e.target.value)}
+                              placeholder="Enter Type"
+                              name="sendto"
+                              value={sendto}
+                              onChange={(e) => setSendto(e.target.value)}
                             />
+                            {errors.sendto && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.sendto}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="input-block mb-3">
+                            <label className="form-label">Seller</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enter Seller"
+                              name="description"
+                              value={description}
+                              onChange={(e) => setDescription(e.target.value)}
+                            />
+                            {errors.description && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.description}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

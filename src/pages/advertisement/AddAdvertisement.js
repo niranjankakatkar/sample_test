@@ -1,7 +1,7 @@
-
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Slide, toast } from "react-toastify";
 import Navbar from "../Navbar";
 
 export default function AddAdvertisement() {
@@ -26,6 +26,22 @@ export default function AddAdvertisement() {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    moduleId: "",
+    categoryId: "",
+    subcategoryId: "",
+    title: "",
+    description: "",
+    seller: "",
+    priority: "",
+    type: "",
+    validity: "",
+    review: "",
+    rating: "",
+    file: "",
+  });
 
   useEffect(() => {
     axios
@@ -72,8 +88,40 @@ export default function AddAdvertisement() {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!moduleId) formErrors.moduleId = "Module is required.";
+    if (!categoryId) formErrors.categoryId = "Category is required.";
+    if (!subcategoryId) formErrors.subcategoryId = "Subcategory is required.";
+    if (!title) formErrors.title = "Title is required.";
+    if (!seller) formErrors.seller = "Seller is required.";
+    if (!type) formErrors.type = "Type is required.";
+    if (!description) formErrors.description = "Description is required.";
+    if (!priority) formErrors.priority = "Priority is required.";
+    if (!validity) formErrors.validity = "Validity is required.";
+    if (!review) formErrors.review = "Review is required.";
+    if (!rating) formErrors.rating = "Rating is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append("moduleId", moduleId);
     formData.append("categoryId", categoryId);
@@ -94,7 +142,7 @@ export default function AddAdvertisement() {
         formData
       )
       .then(() => {
-       /* toast.success("Record Added Successfully", {
+        /* toast.success("Record Added Successfully", {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
@@ -103,7 +151,7 @@ export default function AddAdvertisement() {
         navigate("/advertisement");
       })
       .catch(() => {
-      /*  toast.error("Something went wrong", {
+        /*  toast.error("Something went wrong", {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
@@ -170,11 +218,17 @@ export default function AddAdvertisement() {
                         onChange={handleFileChange}
                       />
                     </label>
+                    {errors.file && (
+                      <div style={{ color: "red", fontSize: "0.85em" }}>
+                        {errors.file}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Module Name */}
             <div className="col-md-6">
               <div className="input-block mb-3">
                 <label className="form-label">Module Name</label>
@@ -190,30 +244,42 @@ export default function AddAdvertisement() {
                     </option>
                   ))}
                 </select>
+                {errors.moduleId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.moduleId}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Category */}
             <div className="col-md-6">
               <div className="input-block mb-3">
-                <label className="form-label">Category Name</label>
+                <label className="form-label">Category</label>
                 <select
                   className="form-control"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
                   <option value="">Select Category</option>
-                  {filteredCategories.map((category) => (
-                    <option key={category._id} value={category._id}>
+                  {categories.map((category) => (
+                    <option key={categoryId._id} value={category._id}>
                       {category.category}
                     </option>
                   ))}
                 </select>
+                {errors.categoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.categoryId}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Subcategory */}
             <div className="col-md-6">
               <div className="input-block mb-3">
-                <label className="form-label">Subcategory Name</label>
+                <label className="form-label">Subcategory</label>
                 <select
                   className="form-control"
                   value={subcategoryId}
@@ -221,11 +287,16 @@ export default function AddAdvertisement() {
                 >
                   <option value="">Select Subcategory</option>
                   {subcategories.map((subcategory) => (
-                    <option key={subcategory._id} value={subcategory._id}>
+                    <option key={subcategoryId._id} value={subcategory._id}>
                       {subcategory.subcategory}
                     </option>
                   ))}
                 </select>
+                {errors.subcategoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.subcategoryId}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -240,6 +311,11 @@ export default function AddAdvertisement() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
+                {errors.title && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.title}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -254,6 +330,11 @@ export default function AddAdvertisement() {
                   value={seller}
                   onChange={(e) => setSeller(e.target.value)}
                 />
+                {errors.seller && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.seller}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -268,6 +349,11 @@ export default function AddAdvertisement() {
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                 />
+                {errors.type && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.type}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -282,6 +368,11 @@ export default function AddAdvertisement() {
                   onChange={(e) => setDescription(e.target.value)}
                   rows="4"
                 />
+                {errors.description && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.description}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -296,22 +387,30 @@ export default function AddAdvertisement() {
                   onChange={(e) => setPriority(e.target.value)}
                   rows="4"
                 />
+                {errors.priority && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.priority}
+                  </div>
+                )}
               </div>
             </div>
-
-           
 
             <div className="col-md-6">
               <div className="input-block mb-3">
                 <label className="form-label">Validity</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Validity"
                   name="validity"
                   value={validity}
                   onChange={(e) => setValidity(e.target.value)}
                 />
+                {errors.validity && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.validity}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -319,13 +418,18 @@ export default function AddAdvertisement() {
               <div className="input-block mb-3">
                 <label className="form-label">Review</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Review"
                   name="review"
                   value={review}
                   onChange={(e) => setReview(e.target.value)}
                 />
+                {errors.review && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.review}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -333,21 +437,24 @@ export default function AddAdvertisement() {
               <div className="input-block mb-3">
                 <label className="form-label">Rating</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Provide Rating"
                   name="rating"
                   value={rating}
                   onChange={(e) => setRating(e.target.value)}
                 />
+                {errors.rating && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.rating}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Active Flag */}
             <div className="col-md-12">
-              <div className="input-block mb-3">
-               
-              </div>
+              <div className="input-block mb-3"></div>
             </div>
 
             {/* Submit Button */}
@@ -356,8 +463,19 @@ export default function AddAdvertisement() {
               style={{ display: "flex", justifyContent: "center" }}
             >
               <div className="input-block">
-              <button type="submit" variant="contained" color="primary"
-                style={{border: 'none', borderRadius: "5px", padding: '10px 20px', backgroundColor: '#7539ff', color:'white', fontWeight: 'bold'}}>
+                <button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{
+                    border: "none",
+                    borderRadius: "5px",
+                    padding: "10px 20px",
+                    backgroundColor: "#7539ff",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
                   Submit
                 </button>
               </div>

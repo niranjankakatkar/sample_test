@@ -27,6 +27,21 @@ export default function User() {
   const [activeCount, setActiveCount] = useState();
   const [inactiveCount, setInactiveCount] = useState();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Number of items to display per page
+
+  // Logic to calculate the index range for the current page
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = data.slice(startIndex, startIndex + itemsPerPage);
+ 
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -68,14 +83,20 @@ export default function User() {
       .catch((err) => console.error(err));
   }, []);
 
-  const handleDelete = (id) => {
+  let ddid;
+
+  const handleDelete = () => {
     axios
-      .delete("http://43.205.22.150:5000/seller/deleteSingleSeller/" + id)
+      .delete("http://43.205.22.150:5000/seller/deleteSingleSeller/" + ddid)
       .then((res) => {
-        //console.log(res);
-        navigate("/seller");
+        console.log(res);
+        window.location.reload();
       })
       .catch((err) => console.error(err));
+  };
+
+  const setDeleteID = (d_id) => {
+    ddid = d_id;
   };
 
   const handleSubmit = (e) => {
@@ -352,7 +373,7 @@ export default function User() {
                             </tr>
                           </thead>
                           <tbody>
-                            {data.map((user, index) => {
+                            {currentData.map((user, index) => {
                               return (
                                 <tr key={index}>
                                   <td>{index + 1}</td>
@@ -405,29 +426,27 @@ export default function User() {
                                           <li>
                                             <Link
                                               className="dropdown-item"
-                                              to={`/seller_detail/${user._id}`}
+                                              to={`/seller-detail/${user._id}`}
                                             >
                                               <i className="far fa-eye me-2"></i>
                                               View Seller Details
                                             </Link>
                                           </li>
                                           <li>
-                                            <a
+                                            <Link
                                               className="dropdown-item"
-                                              href="javascript:void(0);"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#edit_companies"
+                                              to={`/editseller/${user._id}`}
                                             >
                                               <i className="fe fe-edit me-2"></i>
                                               Edit
-                                            </a>
+                                            </Link>
                                           </li>
                                           <li className="delete-alt">
                                             <div>
                                               <a
                                                 className="dropdown-item"
                                                 onClick={() =>
-                                                  handleDelete(user._id)
+                                                  setDeleteID(user._id)
                                                 }
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#delete_modal"
@@ -455,6 +474,46 @@ export default function User() {
                             })}
                           </tbody>
                         </table>
+                        <div
+                          className="pagination-container"
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            alignItems: "center",
+                            marginTop: "16px",
+                          }}
+                        >
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            style={{
+                              backgroundColor: "#7539ff",
+                              color: "white",
+                            }}
+                          >
+                            Previous
+                          </button>
+
+                          <span
+                            className="page-info"
+                            style={{ margin: "0 8px" }}
+                          >
+                            Page {currentPage} of {totalPages}
+                          </span>
+
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            style={{
+                              backgroundColor: "#07bc0c",
+                              color: "white",
+                            }}
+                          >
+                            Next
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -484,6 +543,7 @@ export default function User() {
                   <div className="modal-footer justify-content-center p-0">
                     <button
                       type="submit"
+                      onClick={() => handleDelete()}
                       data-bs-dismiss="modal"
                       className="btn btn-primary paid-continue-btn me-2"
                     >

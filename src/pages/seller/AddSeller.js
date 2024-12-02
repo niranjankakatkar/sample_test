@@ -4,7 +4,6 @@ import { toast, Slide } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-
 import Navbar from "../Navbar";
 
 export default function AddSeller() {
@@ -13,7 +12,6 @@ export default function AddSeller() {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [tax, setTax] = useState("");
-
   const [zone, setZone] = useState("");
   const [lat, setLat] = useState("");
   const [long, setLong] = useState("");
@@ -27,9 +25,26 @@ export default function AddSeller() {
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
+  // Validation states
+  const [errors, setErrors] = useState({
+    name: "",
+    address: "",
+    tax: "",
+    zone: "",
+    lat: "",
+    long: "",
+    ofname: "",
+    olname: "",
+    mobileno: "",
+    email: "",
+    password: "",
+    time: "",
+    file: "",
+  });
+
   const handleTimeChange = (event) => {
     const { name, value } = event.target;
-  
+
     // Update the `time` object in the state
     setTime((prevTime) => ({
       ...prevTime,
@@ -37,15 +52,14 @@ export default function AddSeller() {
     }));
   };
 
-
   // Function to format time
-const formatTime = (time) => {
-  const { hour, minute, period } = time;
-  if (hour && minute && period) {
-    return `${hour}:${minute < 10 ? `0${minute}` : minute} ${period}`;
-  }
-  return null; // Return null if any part of the time is missing
-};
+  const formatTime = (time) => {
+    const { hour, minute, period } = time;
+    if (hour && minute && period) {
+      return `${hour}:${minute < 10 ? `0${minute}` : minute} ${period}`;
+    }
+    return null; // Return null if any part of the time is missing
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -60,12 +74,46 @@ const formatTime = (time) => {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!name) formErrors.name = "Module is required.";
+    if (!address) formErrors.address = "Address is required.";
+    if (!tax) formErrors.tax = "Tax is required.";
+    if (!zone) formErrors.zone = "Zone is required.";
+    if (!lat) formErrors.lat = "Latitude is required.";
+    if (!long) formErrors.long = "Longitude is required.";
+    if (!ofname) formErrors.ofname = "Owner first name is required.";
+    if (!olname) formErrors.olname = "Owner first name is required.";
+    if (!/^\d{10}$/.test(mobileno)) {
+      formErrors.mobileno = "Mobile number must be exactly 10 digits.";
+    }
+    if (!email) formErrors.email = "Email is required.";
+    if (!password) formErrors.password = "Password is required.";
+    if (!time) formErrors.time = "Time is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
     // Format the time before appending it to FormData
     const formattedTime = formatTime(time);
-  
+
     if (!formattedTime) {
       toast.error("Please select a valid time", {
         position: "top-right",
@@ -75,7 +123,7 @@ const formatTime = (time) => {
       });
       return;
     }
-  
+
     // Creating FormData and appending the form fields
     const formData = new FormData();
     formData.append("name", name);
@@ -91,7 +139,7 @@ const formatTime = (time) => {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("file", file);
-  
+
     // Send data to the backend via axios
     axios
       .post("http://localhost:5000/seller/createSellerImg", formData)
@@ -189,6 +237,11 @@ const formatTime = (time) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
+                {errors.name && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.name}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -204,6 +257,11 @@ const formatTime = (time) => {
                   value={tax}
                   onChange={(e) => setTax(e.target.value)}
                 />
+                {errors.tax && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.tax}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -219,6 +277,11 @@ const formatTime = (time) => {
                   onChange={(e) => setAddress(e.target.value)}
                   rows="6"
                 />
+                {errors.address && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.address}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -234,6 +297,11 @@ const formatTime = (time) => {
                   value={zone}
                   onChange={(e) => setZone(e.target.value)}
                 />
+                {errors.zone && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.zone}
+                  </div>
+                )}
               </div>
 
               {/* Time Picker */}
@@ -293,6 +361,11 @@ const formatTime = (time) => {
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
                   </select>
+                  {errors.time && (
+                    <div style={{ color: "red", fontSize: "0.85em" }}>
+                      {errors.time}
+                    </div>
+                  )}
                 </div>
 
                 {/* Display Selected Time */}
@@ -312,13 +385,18 @@ const formatTime = (time) => {
               <div className="input-block mb-3">
                 <label className="form-label">Latitude</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Latitude"
                   name="lat"
                   value={lat}
                   onChange={(e) => setLat(e.target.value)}
                 />
+                {errors.lat && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.lat}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -327,13 +405,18 @@ const formatTime = (time) => {
               <div className="input-block mb-3">
                 <label className="form-label">Longitude</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Longitude"
                   name="long"
                   value={long}
                   onChange={(e) => setLong(e.target.value)}
                 />
+                {errors.long && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.long}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -349,6 +432,11 @@ const formatTime = (time) => {
                   value={ofname}
                   onChange={(e) => setofName(e.target.value)}
                 />
+                {errors.ofname && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.ofname}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -364,6 +452,11 @@ const formatTime = (time) => {
                   value={olname}
                   onChange={(e) => setolName(e.target.value)}
                 />
+                {errors.olname && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.olname}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -377,8 +470,19 @@ const formatTime = (time) => {
                   placeholder="Enter Mobile No"
                   name="mobileno"
                   value={mobileno}
-                  onChange={(e) => setMobileno(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow only numeric values and restrict to 10 digits
+                    if (/^\d{0,10}$/.test(value)) {
+                      setMobileno(value);
+                    }
+                  }}
                 />
+                {errors.mobileno && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.mobileno}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -394,6 +498,11 @@ const formatTime = (time) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {errors.email && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.email}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -409,6 +518,11 @@ const formatTime = (time) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                {errors.password && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.password}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -423,8 +537,19 @@ const formatTime = (time) => {
               style={{ display: "flex", justifyContent: "center" }}
             >
               <div className="input-block">
-                <button type="submit" variant="contained" color="primary"
-                style={{border: 'none', borderRadius: "5px", padding: '10px 20px', backgroundColor: '#7539ff', color:'white', fontWeight: 'bold'}}>
+                <button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{
+                    border: "none",
+                    borderRadius: "5px",
+                    padding: "10px 20px",
+                    backgroundColor: "#7539ff",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
                   Submit
                 </button>
               </div>

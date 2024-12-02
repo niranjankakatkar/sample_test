@@ -23,6 +23,35 @@ export default function User() {
   const [allCount, setAllCount] = useState();
   const [activeCount, setActiveCount] = useState();
   const [inactiveCount, setInactiveCount] = useState();
+  const [imagePreview, setImagePreview] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Number of items to display per page
+
+  // Logic to calculate the index range for the current page
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = data.slice(startIndex, startIndex + itemsPerPage);
+ 
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    if (selectedFile) {
+      reader.readAsDataURL(selectedFile);
+    }
+  };
 
 
   useEffect(() => {
@@ -366,7 +395,7 @@ export default function User() {
                         </tr>
                       </thead>
                       <tbody>
-                        {data.map((user, index) => {
+                        {currentData.map((user, index) => {
                           return (
                             <tr key={index}>
                               <td>{index + 1}</td>
@@ -461,6 +490,46 @@ export default function User() {
                         })}
                       </tbody>
                     </table>
+                    <div
+                          className="pagination-container"
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            alignItems: "center",
+                            marginTop: "16px",
+                          }}
+                        >
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            style={{
+                              backgroundColor: "#7539ff",
+                              color: "white",
+                            }}
+                          >
+                            Previous
+                          </button>
+
+                          <span
+                            className="page-info"
+                            style={{ margin: "0 8px" }}
+                          >
+                            Page {currentPage} of {totalPages}
+                          </span>
+
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            style={{
+                              backgroundColor: "#07bc0c",
+                              color: "white",
+                            }}
+                          >
+                            Next
+                          </button>
+                        </div>
                   </div>
                 </div>
               </div>
@@ -537,11 +606,14 @@ export default function User() {
                       <div className="profile-picture">
                         <div className="upload-profile">
                           <div className="profile-img company-profile-img">
-                            <img
-                              id="company-img"
-                              className="img-fluid me-0"
-                              src="assets/img/companies/company-add-img.svg"
-                              alt="profile-img"
+                          <img
+                                id="company-img"
+                                className="img-fluid me-0"
+                                src={
+                                  imagePreview ||
+                                  "assets/img/companies/company-add-img.svg"
+                                }
+                                alt="profile-img"
                             />
                           </div>
                           <div className="add-profile">
@@ -555,7 +627,7 @@ export default function User() {
                             <input
                               type="file"
                               accept="image/png,image/jpg,image/jpeg"
-                              onChange={(e) => setFile(e.target.files[0])}
+                              onChange={handleFileChange}
                             />
                           </label>
                         </div>

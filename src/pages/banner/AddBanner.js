@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +22,18 @@ export default function AddBanner() {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    moduleId: "",
+    categoryId: "",
+    subcategoryId: "",
+    title: "",
+    zone: "",
+    type: "",
+    seller: "",
+    file: "",
+  });
 
   useEffect(() => {
     axios
@@ -82,8 +93,36 @@ export default function AddBanner() {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!moduleId) formErrors.moduleId = "Module is required.";
+    if (!categoryId) formErrors.categoryId = "Category is required.";
+    if (!subcategoryId) formErrors.subcategoryId = "Subcategory is required.";
+    if (!title) formErrors.title = "Title is required.";
+    if (!zone) formErrors.zone = "Zone is required.";
+    if (!type) formErrors.type = "Type is required.";
+    if (!seller) formErrors.seller = "Seller is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append("moduleId", moduleId);
     formData.append("categoryId", categoryId);
@@ -177,11 +216,17 @@ export default function AddBanner() {
                         onChange={handleFileChange}
                       />
                     </label>
+                    {errors.file && (
+                      <div style={{ color: "red", fontSize: "0.85em" }}>
+                        {errors.file}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Module Name */}
             <div className="col-md-6">
               <div className="input-block mb-3">
                 <label className="form-label">Module Name</label>
@@ -197,30 +242,42 @@ export default function AddBanner() {
                     </option>
                   ))}
                 </select>
+                {errors.moduleId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.moduleId}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Category */}
             <div className="col-md-6">
               <div className="input-block mb-3">
-                <label className="form-label">Category Name</label>
+                <label className="form-label">Category</label>
                 <select
                   className="form-control"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
                   <option value="">Select Category</option>
-                  {filteredCategories.map((category) => (
-                    <option key={category._id} value={category._id}>
+                  {categories.map((category) => (
+                    <option key={categoryId._id} value={category._id}>
                       {category.category}
                     </option>
                   ))}
                 </select>
+                {errors.categoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.categoryId}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Subcategory */}
             <div className="col-md-6">
               <div className="input-block mb-3">
-                <label className="form-label">Subcategory Name</label>
+                <label className="form-label">Subcategory</label>
                 <select
                   className="form-control"
                   value={subcategoryId}
@@ -228,88 +285,99 @@ export default function AddBanner() {
                 >
                   <option value="">Select Subcategory</option>
                   {subcategories.map((subcategory) => (
-                    <option key={subcategory._id} value={subcategory._id}>
+                    <option key={subcategoryId._id} value={subcategory._id}>
                       {subcategory.subcategory}
                     </option>
                   ))}
                 </select>
+                {errors.subcategoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.subcategoryId}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Title */}
             <div className="col-md-6">
               <div className="input-block mb-3">
-                <label className="form-label">Title Name</label>
+                <label className="form-label">Title</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter Title"
-                  name="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter title"
                 />
+                {errors.title && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.title}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Zone */}
             <div className="col-md-6">
               <div className="input-block mb-3">
                 <label className="form-label">Zone</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter Review"
-                  name="zone"
                   value={zone}
                   onChange={(e) => setZone(e.target.value)}
+                  placeholder="Enter zone"
                 />
+                {errors.zone && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.zone}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Type */}
             <div className="col-md-6">
               <div className="input-block mb-3">
                 <label className="form-label">Type</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter Type"
-                  name="type"
                   value={type}
                   onChange={(e) => setType(e.target.value)}
+                  placeholder="Enter type"
                 />
+                {errors.type && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.type}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Seller */}
             <div className="col-md-6">
               <div className="input-block mb-3">
                 <label className="form-label">Seller</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter Seller"
-                  name="seller"
                   value={seller}
                   onChange={(e) => setSeller(e.target.value)}
+                  placeholder="Enter seller"
                 />
+                {errors.seller && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.seller}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Active Flag */}
-            <div className="col-md-12">
-              <div className="input-block mb-3">
-                
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div
-              className="col-md-12"
-              style={{ display: "flex", justifyContent: "center" }}
-            >
-              <div className="input-block">
-              <button type="submit" variant="contained" color="primary"
-                style={{border: 'none', borderRadius: "5px", padding: '10px 20px', backgroundColor: '#7539ff', color:'white', fontWeight: 'bold'}}>
-                  Submit
-                </button>
-              </div>
+            <div className="col-md-12 text-center">
+              <button type="submit" className="btn btn-primary">
+                Submit
+              </button>
             </div>
           </div>
         </form>

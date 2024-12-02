@@ -13,12 +13,47 @@ export default function User() {
   const [activeFlag, setActiveFlag] = useState();
   const [file, setFile] = useState();
 
-  
   const [allCount, setAllCount] = useState();
   const [activeCount, setActiveCount] = useState();
   const [inactiveCount, setInactiveCount] = useState();
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Number of items to display per page
+
+  // Logic to calculate the index range for the current page
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentData = data.slice(startIndex, startIndex + itemsPerPage);
+ 
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   const { deletID } = useParams();
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    module: "",
+    file: "",
+  });
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    if (selectedFile) {
+      reader.readAsDataURL(selectedFile);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -29,34 +64,35 @@ export default function User() {
       })
       .catch((err) => console.error(err));
 
-      //Ge tALL Count
-      axios.get('http://43.205.22.150:5000/module/getAllCnt')
-      .then(res => {
-          //console.log(res);
+    //Ge tALL Count
+    axios
+      .get("http://43.205.22.150:5000/module/getAllCnt")
+      .then((res) => {
+        //console.log(res);
 
-          setAllCount(res.data.cnt);
+        setAllCount(res.data.cnt);
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
 
-      //Ge Active Count
-      axios.get('http://43.205.22.150:5000/module/getActiveCnt')
-            .then(res => {
-                //console.log(res);
+    //Ge Active Count
+    axios
+      .get("http://43.205.22.150:5000/module/getActiveCnt")
+      .then((res) => {
+        //console.log(res);
 
-                setActiveCount(res.data.cnt);
-            })
-            .catch(err => console.error(err));
-      
-      //Get In Active Count
-      axios.get('http://43.205.22.150:5000/module/getInactiveCnt')
-            .then(res => {
-                //console.log(res);
+        setActiveCount(res.data.cnt);
+      })
+      .catch((err) => console.error(err));
 
-                setInactiveCount(res.data.cnt);
-            })
-            .catch(err => console.error(err))
+    //Get In Active Count
+    axios
+      .get("http://43.205.22.150:5000/module/getInactiveCnt")
+      .then((res) => {
+        //console.log(res);
 
-
+        setInactiveCount(res.data.cnt);
+      })
+      .catch((err) => console.error(err));
   }, []);
 
   const handleDelete = (id) => {
@@ -69,12 +105,33 @@ export default function User() {
       .catch((err) => console.error(err));
   };
 
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!module) formErrors.moduleId = "Module is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('module', module);
-    formData.append('file', file);
 
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("module", module);
+    formData.append("file", file);
 
     axios
       .post("http://43.205.22.150:5000/module/createModuleImg", formData)
@@ -96,7 +153,7 @@ export default function User() {
         });
         //console.log(err);
       });
-   navigate("/module");
+    navigate("/module");
   };
 
   return (
@@ -313,7 +370,10 @@ export default function User() {
                 <div className="card-table">
                   <div className="card-body">
                     <div className="table-responsive">
-                      <div className="companies-table"  style={{height:"100vh"}}> 
+                      <div
+                        className="companies-table"
+                        style={{ height: "100vh" }}
+                      >
                         <table className="table table-center table-hover datatable">
                           <thead className="thead-light">
                             <tr>
@@ -324,16 +384,13 @@ export default function User() {
                             </tr>
                           </thead>
                           <tbody>
-                            {data.map((user, index) => {
+                            {currentData.map((user, index) => {
                               return (
                                 <tr key={index}>
-                                  <td>{index+1}</td>
+                                  <td>{index + 1}</td>
                                   <td>
                                     <h2 className="table-avatar ">
-                                      <a
-                                       
-                                        className=""
-                                      >
+                                      <a className="">
                                         <img
                                           className="avatar-xl"
                                           src="http://localhost:3000/assets/img/logo.png"
@@ -420,6 +477,46 @@ export default function User() {
                             })}
                           </tbody>
                         </table>
+                        <div
+                          className="pagination-container"
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            alignItems: "center",
+                            marginTop: "16px",
+                          }}
+                        >
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            style={{
+                              backgroundColor: "#7539ff",
+                              color: "white",
+                            }}
+                          >
+                            Previous
+                          </button>
+
+                          <span
+                            className="page-info"
+                            style={{ margin: "0 8px" }}
+                          >
+                            Page {currentPage} of {totalPages}
+                          </span>
+
+                          <button
+                            className="btn btn-outline-secondary"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            style={{
+                              backgroundColor: "#07bc0c",
+                              color: "white",
+                            }}
+                          >
+                            Next
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -491,15 +588,18 @@ export default function User() {
                   <div className="row">
                     <div className="col-md-12">
                       <div className="form-field-item">
-                        <h5 className="form-title">Category</h5>
-                        
+                        <h5 className="form-title">Module</h5>
+
                         <div className="profile-picture">
                           <div className="upload-profile">
                             <div className="profile-img company-profile-img">
-                              <img
+                            <img
                                 id="company-img"
                                 className="img-fluid me-0"
-                                src="assets/img/companies/company-add-img.svg"
+                                src={
+                                  imagePreview ||
+                                  "assets/img/companies/company-add-img.svg"
+                                }
                                 alt="profile-img"
                               />
                             </div>
@@ -510,9 +610,18 @@ export default function User() {
                           </div>
                           <div className="img-upload">
                             <label className="btn btn-upload">
-                              Upload <input type="file" accept="image/png,image/jpg,image/jpeg" onChange={(e) => setFile(e.target.files[0])}/>
+                            Upload{" "}
+                              <input
+                                type="file"
+                                accept="image/png,image/jpg,image/jpeg"
+                                onChange={handleFileChange}
+                              />
                             </label>
-                          
+                            {errors.file && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.file}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -528,6 +637,11 @@ export default function User() {
                           value={module}
                           onChange={(e) => setModule(e.target.value)}
                         />
+                        {errors.module && (
+                          <div style={{ color: "red", fontSize: "0.85em" }}>
+                            {errors.module}
+                          </div>
+                        )}
                       </div>
                     </div>
 

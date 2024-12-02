@@ -28,12 +28,33 @@ export default function UpdateUser() {
   const [discount, setDiscount] = useState();
   const [maxdiscount, setMaxdiscount] = useState();
   const [mindiscount, setMindiscount] = useState();
+  const [file, setFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   //  const [file, setFile] = useState(null);
 
   const [modules, setModules] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubCategories] = useState([]);
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    moduleId: "",
+    categoryId: "",
+    subcategoryId: "",
+    title: "",
+    coupontype: "",
+    store: "",
+    customer: "",
+    code: "",
+    limit: "",
+    startdate: "",
+    enddate: "",
+    discounttype: "",
+    discount: "",
+    maxdiscount: "",
+    mindiscount: "",
+  });
 
   useEffect(() => {
     axios
@@ -77,7 +98,7 @@ export default function UpdateUser() {
         setDiscount(response.data.discount);
         setMaxdiscount(response.data.maxdiscount);
         setMindiscount(response.data.mindiscount);
-        // setFile(response.data.file);
+        setFile(response.data.file);
       } catch (error) {
         console.log(error);
       }
@@ -85,8 +106,57 @@ export default function UpdateUser() {
     fetchData();
   }, []);
 
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!moduleId) formErrors.moduleId = "Module is required.";
+    if (!categoryId) formErrors.categoryId = "Category is required.";
+    if (!subcategoryId) formErrors.subcategoryId = "Subcategory is required.";
+    if (!title) formErrors.title = "Title is required.";
+    if (!coupontype) formErrors.zone = "Coupon Type is required.";
+    if (!store) formErrors.type = "Store is required.";
+    if (!customer) formErrors.customer = "Customer is required.";
+    if (!code) formErrors.code = "Code is required.";
+    if (!limit) formErrors.limit = "Limit is required.";
+    if (!startdate) formErrors.startdate = "Start Date is required.";
+    if (!enddate) formErrors.enddate = "End Date is required.";
+    if (!discount) formErrors.discount = "Discount is required.";
+    if (!discounttype) formErrors.discounttype = "Discount Type is required.";
+    if (!maxdiscount) formErrors.maxdiscount = "Max Discount is required.";
+    if (!mindiscount) formErrors.mindiscount = "Min Discount is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    if (selectedFile) {
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
     const formData = new FormData();
 
     formData.append("moduleId", moduleId);
@@ -104,6 +174,7 @@ export default function UpdateUser() {
     formData.append("discount", discount);
     formData.append("maxdiscount", maxdiscount);
     formData.append("mindiscount", mindiscount);
+    formData.append("file", file);
 
     axios
       .post("http://localhost:5000/coupon/editCoupon/" + id, formData)
@@ -151,11 +222,14 @@ export default function UpdateUser() {
                       <h5 className="form-title">Basic Details</h5>
                       <div className="profile-picture">
                         <div className="upload-profile">
-                          <div className="profile-img">
+                          <div className="profile-img company-profile-img">
                             <img
                               id="blah"
                               className="avatar"
-                              src="../assets/img/profiles/avatar-14.jpg"
+                              src={
+                                imagePreview ||
+                                "assets/img/companies/company-add-img.svg"
+                              }
                               alt="profile-img"
                             />
                           </div>
@@ -166,9 +240,19 @@ export default function UpdateUser() {
                         </div>
                         <div className="img-upload">
                           <label className="btn btn-upload">
-                            Upload <input type="file" />
+                            Upload{" "}
+                            <input
+                              type="file"
+                              accept="image/png,image/jpg,image/jpeg"
+                              onChange={handleFileChange}
+                            />
                           </label>
                           <a className="btn btn-remove">Remove</a>
+                          {errors.file && (
+                            <div style={{ color: "red", fontSize: "0.85em" }}>
+                              {errors.file}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="row">
@@ -185,6 +269,11 @@ export default function UpdateUser() {
                                 <option value={opt._id}>{opt.module}</option>
                               ))}
                             </select>
+                            {errors.moduleId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.moduleId}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="col-lg-4 col-md-6 col-sm-12">
@@ -200,6 +289,11 @@ export default function UpdateUser() {
                                 <option value={opt._id}>{opt.category}</option>
                               ))}
                             </select>
+                            {errors.categoryId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.categoryId}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="col-lg-4 col-md-6 col-sm-12">
@@ -217,6 +311,11 @@ export default function UpdateUser() {
                                 </option>
                               ))}
                             </select>
+                            {errors.subcategoryId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.subcategoryId}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -233,6 +332,11 @@ export default function UpdateUser() {
                               value={title}
                               onChange={(e) => setTitle(e.target.value)}
                             />
+                            {errors.title && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.title}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -249,6 +353,11 @@ export default function UpdateUser() {
                               value={coupontype}
                               onChange={(e) => setCoupontype(e.target.value)}
                             />
+                            {errors.coupontype && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.coupontype}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -265,6 +374,11 @@ export default function UpdateUser() {
                               value={store}
                               onChange={(e) => setStore(e.target.value)}
                             />
+                            {errors.store && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.store}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -282,6 +396,11 @@ export default function UpdateUser() {
                               value={customer}
                               onChange={(e) => setCustomer(e.target.value)}
                             />
+                            {errors.customer && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.customer}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -291,7 +410,7 @@ export default function UpdateUser() {
                               Code <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="text"
+                              type="number"
                               id="mobile_code"
                               className="form-control"
                               placeholder="Code"
@@ -299,6 +418,11 @@ export default function UpdateUser() {
                               value={code}
                               onChange={(e) => setCode(e.target.value)}
                             />
+                            {errors.code && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.code}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -308,7 +432,7 @@ export default function UpdateUser() {
                               Limit <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="text"
+                              type="number"
                               id="mobile_code"
                               className="form-control"
                               placeholder="Limit"
@@ -316,6 +440,11 @@ export default function UpdateUser() {
                               value={limit}
                               onChange={(e) => setLimit(e.target.value)}
                             />
+                            {errors.limit && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.limit}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -325,7 +454,7 @@ export default function UpdateUser() {
                               Startdate <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="text"
+                              type="date"
                               id="mobile_code"
                               className="form-control"
                               placeholder="Startdate"
@@ -333,6 +462,11 @@ export default function UpdateUser() {
                               value={startdate}
                               onChange={(e) => setStartdate(e.target.value)}
                             />
+                            {errors.startdate && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.startdate}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -342,7 +476,7 @@ export default function UpdateUser() {
                               Enddate <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="text"
+                              type="date"
                               id="mobile_code"
                               className="form-control"
                               placeholder="End date"
@@ -350,6 +484,11 @@ export default function UpdateUser() {
                               value={enddate}
                               onChange={(e) => setEnddate(e.target.value)}
                             />
+                            {errors.enddate && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.enddate}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -368,6 +507,11 @@ export default function UpdateUser() {
                               value={discounttype}
                               onChange={(e) => setDiscounttype(e.target.value)}
                             />
+                            {errors.discounttype && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.discounttype}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -377,7 +521,7 @@ export default function UpdateUser() {
                               Discount <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="text"
+                              type="number"
                               id="mobile_code"
                               className="form-control"
                               placeholder="Discount"
@@ -385,6 +529,11 @@ export default function UpdateUser() {
                               value={discount}
                               onChange={(e) => setDiscount(e.target.value)}
                             />
+                            {errors.discount && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.discount}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -395,7 +544,7 @@ export default function UpdateUser() {
                               <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="text"
+                              type="number"
                               id="mobile_code"
                               className="form-control"
                               placeholder="Max Discount"
@@ -403,6 +552,11 @@ export default function UpdateUser() {
                               value={maxdiscount}
                               onChange={(e) => setMaxdiscount(e.target.value)}
                             />
+                            {errors.maxdiscount && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.maxdiscount}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -413,7 +567,7 @@ export default function UpdateUser() {
                               <span className="text-danger">*</span>
                             </label>
                             <input
-                              type="text"
+                              type="number"
                               id="mobile_code"
                               className="form-control"
                               placeholder="Customer"
@@ -421,6 +575,11 @@ export default function UpdateUser() {
                               value={mindiscount}
                               onChange={(e) => setMindiscount(e.target.value)}
                             />
+                            {errors.mindiscount && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.mindiscount}
+                              </div>
+                            )}
                           </div>
                         </div>
 

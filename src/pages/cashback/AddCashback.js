@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +26,21 @@ export default function AddCashback() {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
+
+  const [errors, setErrors] = useState({
+    moduleId: "",
+    categoryId: "",
+    subcategoryId: "",
+    title: "",
+    customer: "",
+    cashback: "",
+    minpurchase: "",
+    maxdiscount: "",
+    startdate: "",
+    enddate: "",
+    limit: "",
+    file: "",
+  });
 
   useEffect(() => {
     axios
@@ -73,8 +87,40 @@ export default function AddCashback() {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!moduleId) formErrors.moduleId = "Module is required.";
+    if (!categoryId) formErrors.categoryId = "Category is required.";
+    if (!subcategoryId) formErrors.subcategoryId = "Subcategory is required.";
+    if (!title) formErrors.title = "Title is required.";
+    if (!customer) formErrors.customer = "Customer is required.";
+    if (!cashback) formErrors.cashback = "Cashback is required.";
+    if (!minpurchase) formErrors.minpurchase = "Min Purchase is required.";
+    if (!maxdiscount) formErrors.maxdiscount = "Max Discount is required.";
+    if (!startdate) formErrors.startdate = "Startdate is required.";
+    if (!enddate) formErrors.enddate = "End Date is required.";
+    if (!limit) formErrors.limit = "Limit is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append("moduleId", moduleId);
     formData.append("categoryId", categoryId);
@@ -172,11 +218,17 @@ export default function AddCashback() {
                         onChange={handleFileChange}
                       />
                     </label>
+                    {errors.file && (
+                      <div style={{ color: "red", fontSize: "0.85em" }}>
+                        {errors.file}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Module Name */}
             <div className="col-md-6">
               <div className="input-block mb-3">
                 <label className="form-label">Module Name</label>
@@ -192,30 +244,42 @@ export default function AddCashback() {
                     </option>
                   ))}
                 </select>
+                {errors.moduleId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.moduleId}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Category */}
             <div className="col-md-6">
               <div className="input-block mb-3">
-                <label className="form-label">Category Name</label>
+                <label className="form-label">Category</label>
                 <select
                   className="form-control"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
                   <option value="">Select Category</option>
-                  {filteredCategories.map((category) => (
-                    <option key={category._id} value={category._id}>
+                  {categories.map((category) => (
+                    <option key={categoryId._id} value={category._id}>
                       {category.category}
                     </option>
                   ))}
                 </select>
+                {errors.categoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.categoryId}
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Subcategory */}
             <div className="col-md-6">
               <div className="input-block mb-3">
-                <label className="form-label">Subcategory Name</label>
+                <label className="form-label">Subcategory</label>
                 <select
                   className="form-control"
                   value={subcategoryId}
@@ -223,11 +287,16 @@ export default function AddCashback() {
                 >
                   <option value="">Select Subcategory</option>
                   {subcategories.map((subcategory) => (
-                    <option key={subcategory._id} value={subcategory._id}>
+                    <option key={subcategoryId._id} value={subcategory._id}>
                       {subcategory.subcategory}
                     </option>
                   ))}
                 </select>
+                {errors.subcategoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.subcategoryId}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -242,6 +311,11 @@ export default function AddCashback() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
+                {errors.title && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.title}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -256,6 +330,11 @@ export default function AddCashback() {
                   value={customer}
                   onChange={(e) => setCustomer(e.target.value)}
                 />
+                {errors.customer && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.customer}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -263,13 +342,18 @@ export default function AddCashback() {
               <div className="input-block mb-3">
                 <label className="form-label">Cashback</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Cashback"
                   name="cashback"
                   value={cashback}
                   onChange={(e) => setCashback(e.target.value)}
                 />
+                {errors.cashback && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.cashback}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -277,13 +361,18 @@ export default function AddCashback() {
               <div className="input-block mb-3">
                 <label className="form-label">Minimum Purchase</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Discount"
                   name="minpurchase"
                   value={minpurchase}
                   onChange={(e) => setMinpurchase(e.target.value)}
                 />
+                {errors.minpurchase && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.minpurchase}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -291,13 +380,18 @@ export default function AddCashback() {
               <div className="input-block mb-3">
                 <label className="form-label">Max Discount</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Max Discount"
                   name="maxdiscount"
                   value={maxdiscount}
                   onChange={(e) => setMaxdiscount(e.target.value)}
                 />
+                {errors.maxdiscount && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.maxdiscount}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -305,13 +399,18 @@ export default function AddCashback() {
               <div className="input-block mb-3">
                 <label className="form-label">Limit</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Limit"
                   name="limit"
                   value={limit}
                   onChange={(e) => setLimit(e.target.value)}
                 />
+                {errors.limit && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.limit}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -325,6 +424,11 @@ export default function AddCashback() {
                   className="form-control"
                   placeholderText="Enter Start Date"
                 />
+                {errors.startdate && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.startdate}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -338,14 +442,17 @@ export default function AddCashback() {
                   value={enddate}
                   placeholderText="Enter End Date"
                 />
+                {errors.enddate && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.enddate}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Active Flag */}
             <div className="col-md-12">
-              <div className="input-block mb-3">
-               
-              </div>
+              <div className="input-block mb-3"></div>
             </div>
 
             {/* Submit Button */}
@@ -354,8 +461,19 @@ export default function AddCashback() {
               style={{ display: "flex", justifyContent: "center" }}
             >
               <div className="input-block">
-              <button type="submit" variant="contained" color="primary"
-                style={{border: 'none', borderRadius: "5px", padding: '10px 20px', backgroundColor: '#7539ff', color:'white', fontWeight: 'bold'}}>
+                <button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{
+                    border: "none",
+                    borderRadius: "5px",
+                    padding: "10px 20px",
+                    backgroundColor: "#7539ff",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
                   Submit
                 </button>
               </div>

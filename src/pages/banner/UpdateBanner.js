@@ -20,11 +20,26 @@ export default function UpdateUser() {
   const [zone, setZone] = useState("");
   const [type, setType] = useState("");
   const [seller, setSeller] = useState("");
+  const [file, setFile] = useState();
+  const [imagePreview, setImagePreview] = useState(null);
+
   //  const [file, setFile] = useState(null);
 
   const [modules, setModules] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubCategories] = useState([]);
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    moduleId: "",
+    categoryId: "",
+    subcategoryId: "",
+    title: "",
+    zone: "",
+    type: "",
+    seller: "",
+    file: "",
+  });
 
   useEffect(() => {
     axios
@@ -68,8 +83,51 @@ export default function UpdateUser() {
     fetchData();
   }, []);
 
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!moduleId) formErrors.moduleId = "Module is required.";
+    if (!categoryId) formErrors.categoryId = "Category is required.";
+    if (!subcategoryId) formErrors.subcategoryId = "Subcategory is required.";
+    if (!title) formErrors.title = "Title is required.";
+    if (!zone) formErrors.zone = "Zone is required.";
+    if (!type) formErrors.type = "Type is required.";
+    if (!seller) formErrors.seller = "Seller is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    if (selectedFile) {
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
+    
+
     const formData = new FormData();
 
     formData.append("moduleId", moduleId);
@@ -79,6 +137,7 @@ export default function UpdateUser() {
     formData.append("zone", zone);
     formData.append("type", type);
     formData.append("seller", seller);
+    formData.append("file", file);
 
     axios
       .post("http://localhost:5000/banner/editBanner/" + id, formData)
@@ -126,11 +185,14 @@ export default function UpdateUser() {
                       <h5 className="form-title">Basic Details</h5>
                       <div className="profile-picture">
                         <div className="upload-profile">
-                          <div className="profile-img">
+                          <div className="profile-img company-profile-img">
                             <img
                               id="blah"
                               className="avatar"
-                              src="../assets/img/profiles/avatar-14.jpg"
+                              src={
+                                imagePreview || 
+                                "assets/img/companies/company-profile-img.svg"
+                              }
                               alt="profile-img"
                             />
                           </div>
@@ -141,9 +203,16 @@ export default function UpdateUser() {
                         </div>
                         <div className="img-upload">
                           <label className="btn btn-upload">
-                            Upload <input type="file" />
+                            Upload{" "} 
+                            <input type="file"  accept="image/png,image/jpg,image/jpeg" 
+                            onChange={handleFileChange} />
                           </label>
                           <a className="btn btn-remove">Remove</a>
+                          {errors.file && (
+                            <div style={{ color: "red", fontSize: "0.85em" }}>
+                              {errors.file}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="row">
@@ -160,6 +229,11 @@ export default function UpdateUser() {
                                 <option value={opt._id}>{opt.module}</option>
                               ))}
                             </select>
+                            {errors.moduleId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.moduleId}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="col-lg-4 col-md-6 col-sm-12">
@@ -175,6 +249,11 @@ export default function UpdateUser() {
                                 <option value={opt._id}>{opt.category}</option>
                               ))}
                             </select>
+                            {errors.categoryId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.categoryId}
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="col-lg-4 col-md-6 col-sm-12">
@@ -192,6 +271,11 @@ export default function UpdateUser() {
                                 </option>
                               ))}
                             </select>
+                            {errors.subcategoryId && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.subcategoryId}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -208,6 +292,11 @@ export default function UpdateUser() {
                               value={title}
                               onChange={(e) => setTitle(e.target.value)}
                             />
+                            {errors.title && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.title}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -224,6 +313,11 @@ export default function UpdateUser() {
                               value={zone}
                               onChange={(e) => setZone(e.target.value)}
                             />
+                            {errors.zone && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.zone}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -240,6 +334,11 @@ export default function UpdateUser() {
                               value={type}
                               onChange={(e) => setType(e.target.value)}
                             />
+                            {errors.type && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.type}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -257,6 +356,11 @@ export default function UpdateUser() {
                               value={seller}
                               onChange={(e) => setSeller(e.target.value)}
                             />
+                            {errors.seller && (
+                              <div style={{ color: "red", fontSize: "0.85em" }}>
+                                {errors.seller}
+                              </div>
+                            )}
                           </div>
                         </div>
 

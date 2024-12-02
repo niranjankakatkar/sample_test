@@ -1,11 +1,8 @@
-
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Slide, toast } from "react-toastify";
 import Navbar from "../Navbar";
-
-
 
 export default function AddBanner() {
   const navigate = useNavigate();
@@ -32,39 +29,83 @@ export default function AddBanner() {
   const [modules, setModules] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubCategories] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState([]);
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    moduleId: "",
+    categoryId: "",
+    subcategoryId: "",
+    title: "",
+    coupontype: "",
+    store: "",
+    customer: "",
+    code: "",
+    limit: "",
+    startdate: "",
+    enddate: "",
+    discounttype: "",
+    discount: "",
+    maxdiscount: "",
+    mindiscount: "",
+    file: "",
+  });
 
   useEffect(() => {
     axios
-      .get("http://43.205.22.150:5000/subcategory/getAllSubcategory")
+      .get("http://localhost:5000/subcategory/getAllSubcategory")
       .then((res) => setSubCategories(res.data))
       .catch((err) => console.error(err));
 
     axios
-      .get("http://43.205.22.150:5000/module/getAllModule")
+      .get("http://localhost:5000/module/getAllModule")
       .then((res) => setModules(res.data))
       .catch((err) => console.error(err));
 
     axios
-      .get("http://43.205.22.150:5000/category/getAllCategory")
+      .get("http://localhost:5000/category/getAllCategory")
       .then((res) => {
         setCategories(res.data);
       })
       .catch((err) => console.error(err));
   }, []);
 
-  useEffect(() => {
-    if (moduleId) {
-      axios
-        .get(
-          `http://43.205.22.150:5000/category/getCategoriesByModule/${moduleId}`
-        )
-        .then((res) => setFilteredCategories(res.data))
-        .catch((err) => console.error(err));
-    } else {
-      setFilteredCategories([]);
-    }
-  }, [moduleId]);
+  // useEffect(() => {
+  //   if (moduleId) {
+  //     axios
+  //       .get(
+  //         `http://43.205.22.150:5000/category/getCategoriesByModule/${moduleId}`
+  //       )
+  //       .then((res) => setFilteredCategories(res.data))
+  //       .catch((err) => console.error(err));
+  //   } else {
+  //     setFilteredCategories([]);
+  //   }
+  // }, [moduleId]);
+
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!moduleId) formErrors.moduleId = "Module is required.";
+    if (!categoryId) formErrors.categoryId = "Category is required.";
+    if (!subcategoryId) formErrors.subcategoryId = "Subcategory is required.";
+    if (!title) formErrors.title = "Title is required.";
+    if (!coupontype) formErrors.zone = "Coupon Type is required.";
+    if (!store) formErrors.type = "Store is required.";
+    if (!customer) formErrors.customer = "Customer is required.";
+    if (!code) formErrors.code = "Code is required.";
+    if (!limit) formErrors.limit = "Limit is required.";
+    if (!startdate) formErrors.startdate = "Start Date is required.";
+    if (!enddate) formErrors.enddate = "End Date is required.";
+    if (!discount) formErrors.discount = "Discount is required.";
+    if (!discounttype) formErrors.discounttype = "Discount Type is required.";
+    if (!maxdiscount) formErrors.maxdiscount = "Max Discount is required.";
+    if (!mindiscount) formErrors.mindiscount = "Min Discount is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -81,6 +122,17 @@ export default function AddBanner() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append("moduleId", moduleId);
     formData.append("categoryId", categoryId);
@@ -182,6 +234,11 @@ export default function AddBanner() {
                         onChange={handleFileChange}
                       />
                     </label>
+                    {errors.file && (
+                      <div style={{ color: "red", fontSize: "0.85em" }}>
+                        {errors.file}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -202,6 +259,11 @@ export default function AddBanner() {
                     </option>
                   ))}
                 </select>
+                {errors.moduleId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.moduleId}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -214,7 +276,7 @@ export default function AddBanner() {
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
                   <option value="">Select Category</option>
-                  {filteredCategories.map((category) => (
+                  {categories.map((category) => (
                     <option key={category._id} value={category._id}>
                       {category.category}
                     </option>
@@ -238,6 +300,11 @@ export default function AddBanner() {
                     </option>
                   ))}
                 </select>
+                {errors.subcategoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.subcategoryId}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -252,6 +319,11 @@ export default function AddBanner() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
+                {errors.title && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.title}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -266,6 +338,11 @@ export default function AddBanner() {
                   value={coupontype}
                   onChange={(e) => setCoupontype(e.target.value)}
                 />
+                {errors.coupontype && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.coupontype}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -280,6 +357,11 @@ export default function AddBanner() {
                   value={store}
                   onChange={(e) => setStore(e.target.value)}
                 />
+                {errors.store && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.store}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -294,6 +376,11 @@ export default function AddBanner() {
                   value={customer}
                   onChange={(e) => setCustomer(e.target.value)}
                 />
+                {errors.customer && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.customer}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -301,13 +388,18 @@ export default function AddBanner() {
               <div className="input-block mb-3">
                 <label className="form-label">Code</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Code"
                   name="code"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                 />
+                {errors.code && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.code}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -315,13 +407,18 @@ export default function AddBanner() {
               <div className="input-block mb-3">
                 <label className="form-label">Limit</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Limit"
                   name="limit"
                   value={limit}
                   onChange={(e) => setLimit(e.target.value)}
                 />
+                {errors.limit && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.limit}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -336,6 +433,11 @@ export default function AddBanner() {
                   value={discounttype}
                   onChange={(e) => setDiscounttype(e.target.value)}
                 />
+                {errors.discounttype && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.discounttype}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -343,13 +445,18 @@ export default function AddBanner() {
               <div className="input-block mb-3">
                 <label className="form-label">Discount</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Discount"
                   name="discount"
                   value={discount}
                   onChange={(e) => setDiscount(e.target.value)}
                 />
+                {errors.discount && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.discount}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -357,13 +464,18 @@ export default function AddBanner() {
               <div className="input-block mb-3">
                 <label className="form-label">Max Discount</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Max Discount"
                   name="maxdiscount"
                   value={maxdiscount}
                   onChange={(e) => setMaxdiscount(e.target.value)}
                 />
+                {errors.maxdiscount && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.maxdiscount}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -371,13 +483,18 @@ export default function AddBanner() {
               <div className="input-block mb-3">
                 <label className="form-label">Min Discount</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   placeholder="Enter Min Discount"
                   name="mindiscount"
                   value={mindiscount}
                   onChange={(e) => setMindiscount(e.target.value)}
                 />
+                {errors.mindiscount && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.mindiscount}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -391,6 +508,11 @@ export default function AddBanner() {
                   className="form-control"
                   placeholderText="Enter Start Date"
                 />
+                {errors.startdate && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.startdate}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -404,14 +526,17 @@ export default function AddBanner() {
                   value={enddate}
                   placeholderText="Enter End Date"
                 />
+                {errors.enddate && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.enddate}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Active Flag */}
             <div className="col-md-12">
-              <div className="input-block mb-3">
-                
-              </div>
+              <div className="input-block mb-3"></div>
             </div>
 
             {/* Submit Button */}
@@ -420,8 +545,19 @@ export default function AddBanner() {
               style={{ display: "flex", justifyContent: "center" }}
             >
               <div className="input-block">
-              <button type="submit" variant="contained" color="primary"
-                style={{border: 'none', borderRadius: "5px", padding: '10px 20px', backgroundColor: '#7539ff', color:'white', fontWeight: 'bold'}}>
+                <button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{
+                    border: "none",
+                    borderRadius: "5px",
+                    padding: "10px 20px",
+                    backgroundColor: "#7539ff",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
                   Submit
                 </button>
               </div>

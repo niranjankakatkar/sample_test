@@ -18,11 +18,23 @@ export default function AddPushNotification() {
   const [activeFlag, setActiveFlag] = useState(true);
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  
 
   const [modules, setModules] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubCategories] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState([]);
+
+  // Validation states
+  const [errors, setErrors] = useState({
+    moduleId: "",
+    categoryId: "",
+    subcategoryId: "",
+    title: "",
+    zone: "",
+    sendto: "",
+    description: "",
+    file: "",
+  });
 
   useEffect(() => {
     axios
@@ -33,7 +45,7 @@ export default function AddPushNotification() {
     axios
       .get("http://43.205.22.150:5000/module/getAllModule")
       .then((res) => setModules(res.data))
-      .catch((err) => console.error(err));
+       .catch((err) => console.error(err));
 
     axios
       .get("http://43.205.22.150:5000/category/getAllCategory")
@@ -43,18 +55,18 @@ export default function AddPushNotification() {
       .catch((err) => console.error(err));
   }, []);
 
-  useEffect(() => {
-    if (moduleId) {
-      axios
-        .get(
-          `http://43.205.22.150:5000/category/getCategoriesByModule/${moduleId}`
-        )
-        .then((res) => setFilteredCategories(res.data))
-        .catch((err) => console.error(err));
-    } else {
-      setFilteredCategories([]);
-    }
-  }, [moduleId]);
+  // useEffect(() => {
+  //   if (moduleId) {
+  //     axios
+  //       .get(
+  //         `http://43.205.22.150:5000/category/getCategoriesByModule/${moduleId}`
+  //       )
+  //       .then((res) => setFilteredCategories(res.data))
+  //       .catch((err) => console.error(err));
+  //   } else {
+  //     setFilteredCategories([]);
+  //   }
+  // }, [moduleId]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -69,8 +81,36 @@ export default function AddPushNotification() {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!moduleId) formErrors.moduleId = "Module is required.";
+    if (!categoryId) formErrors.categoryId = "Category is required.";
+    if (!subcategoryId) formErrors.subcategoryId = "Subcategory is required.";
+    if (!title) formErrors.title = "Title is required.";
+    if (!zone) formErrors.zone = "Zone is required.";
+    if (!sendto) formErrors.sendto = "Sendto is required.";
+    if (!description) formErrors.description = "Description is required.";
+    if (!file) formErrors.file = "Image file is required.";
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fill all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append("moduleId", moduleId);
     formData.append("categoryId", categoryId);
@@ -167,6 +207,11 @@ export default function AddPushNotification() {
                         onChange={handleFileChange}
                       />
                     </label>
+                    {errors.file && (
+                      <div style={{ color: "red", fontSize: "0.85em" }}>
+                        {errors.file}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -187,6 +232,11 @@ export default function AddPushNotification() {
                     </option>
                   ))}
                 </select>
+                {errors.moduleId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.moduleId}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -199,12 +249,17 @@ export default function AddPushNotification() {
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
                   <option value="">Select Category</option>
-                  {filteredCategories.map((category) => (
+                  {categories.map((category) => (
                     <option key={category._id} value={category._id}>
                       {category.category}
                     </option>
                   ))}
                 </select>
+                {errors.categoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.categoryId}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -223,6 +278,11 @@ export default function AddPushNotification() {
                     </option>
                   ))}
                 </select>
+                {errors.subcategoryId && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.subcategoryId}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -237,6 +297,11 @@ export default function AddPushNotification() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
+                 {errors.title && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.title}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -251,6 +316,11 @@ export default function AddPushNotification() {
                   value={zone}
                   onChange={(e) => setZone(e.target.value)}
                 />
+                 {errors.zone && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.zone}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -265,6 +335,11 @@ export default function AddPushNotification() {
                   value={sendto}
                   onChange={(e) => setSendto(e.target.value)}
                 />
+                 {errors.sendto && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.sendto}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -279,6 +354,11 @@ export default function AddPushNotification() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
+               {errors.description && (
+                  <div style={{ color: "red", fontSize: "0.85em" }}>
+                    {errors.description}
+                  </div>
+                )}
               </div>
             </div>
 
