@@ -154,7 +154,7 @@ export default function Navbar() {
                   Notifications <a href="notifications.html">View all</a>
                 </div>
                 <a
-                  href="javascript:void(0)"
+                  href="#top"
                   className="clear-noti d-flex align-items-center"
                 >
                   Mark all as read
@@ -175,7 +175,7 @@ export default function Navbar() {
 
           <li className="nav-item dropdown">
             <a
-              href="javascript:void(0)"
+              href="#top"
               className="user-link  nav-link"
               data-bs-toggle="dropdown"
             >
@@ -297,7 +297,7 @@ export default function Navbar() {
               <li className="submenu">
                 <Link to="/banner">
                 <i className="fa-solid fa-tablet-screen-button"></i>
-                <span>Banner</span><span class="menu-arrow"></span>
+                <span>Banner</span><span className="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
@@ -318,7 +318,7 @@ export default function Navbar() {
               <li className="submenu">
                 <Link to="/coupon">
                 <i className="fa-solid fa-ticket"></i> 
-                <span>Coupons</span><span class="menu-arrow"></span>
+                <span>Coupons</span><span className="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
@@ -339,7 +339,7 @@ export default function Navbar() {
               <li className="submenu">
                 <Link to="/cashback">
                 <i className="fa-solid fa-sack-dollar"></i>
-                 <span>Cashback</span><span class="menu-arrow"></span>
+                 <span>Cashback</span><span className="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
@@ -359,7 +359,7 @@ export default function Navbar() {
 
               <li className="submenu">
                 <Link to="/pushnotification">
-                <i className="fa-solid fa-bell"></i><span>Push Notification</span><span class="menu-arrow"></span>
+                <i className="fa-solid fa-bell"></i><span>Push Notification</span><span className="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
@@ -380,7 +380,7 @@ export default function Navbar() {
               <li className="submenu">
                 <Link to="/advertisement">
                 <i className="fa-solid fa-video-slash"></i>
-                  <span>Advertisement</span><span class="menu-arrow"></span>
+                  <span>Advertisement</span><span className="menu-arrow"></span>
                 </Link>
                 <ul style={{ display: "none" }}>
                   <li>
